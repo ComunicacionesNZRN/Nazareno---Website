@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard | Nazareno Cali</title>
+    <link rel="icon" type="image/png" href="../Media/logoNegro.png" />
+    <link rel="stylesheet" href="admin.css" />
+  </head>
+  <body data-admin-protected="true">
+    <div class="admin-shell">
+      <aside class="admin-sidebar">
+        <a class="admin-brand" href="index.html"><img src="../Media/logoNegro.png" alt="" /> Nazareno Admin</a>
+        <nav class="admin-nav" aria-label="Administración"><a class="is-active" href="index.html">Dashboard</a><a href="eventos.html">Eventos</a><a href="index.html#grupos">Grupos</a><a href="index.html#configuracion">Configuración</a></nav>
+        <p class="admin-sidebar-footer">Contenido privado de Iglesia del Nazareno Cali.</p>
+      </aside>
+      <main class="admin-main">
+        <header class="admin-topbar"><div><p class="admin-eyebrow">Panel de administración</p><h1 class="admin-title">Hola.</h1><p class="admin-lead">Gestiona el contenido que aparece en el sitio público.</p></div><div class="admin-user"><span>Sesión activa<br /><strong data-admin-email>Cargando...</strong></span><button class="admin-button admin-button-danger" type="button" data-sign-out>Cerrar sesión</button></div></header>
+        <section class="admin-cards" aria-label="Accesos de administración"><a class="admin-card" href="eventos.html"><span class="admin-card-number">01</span><div><h2>Gestionar<br />eventos.</h2><p>Crea, actualiza o retira eventos de la agenda pública.</p></div><span class="admin-card-arrow">↗</span></a><a class="admin-card" href="index.html#grupos"><span class="admin-card-number">02</span><div><h2>Gestionar<br />grupos.</h2><p>Próximamente podrás mantener la información de grupos.</p></div><span class="admin-card-arrow">↗</span></a><a class="admin-card" id="configuracion" href="index.html#configuracion"><span class="admin-card-number">03</span><div><h2>Configuración<br />del sitio.</h2><p>Próximamente podrás actualizar datos generales y enlaces.</p></div><span class="admin-card-arrow">↗</span></a></section>
+        <p class="admin-status" data-auth-status role="alert"></p>
+      </main>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/supabase-client.js"></script>
+    <script src="./admin-auth.js"></script>
+    <script>
+      (async () => {
+        try {
+          const user = await window.supabaseAdmin.requireAdminSession();
+          if (user) document.querySelector("[data-admin-email]").textContent = user.email;
+        } catch (error) { window.supabaseAdmin.showAuthError(document.querySelector("[data-auth-status]"), error); }
+      })();
+      document.querySelector("[data-sign-out]").addEventListener("click", async () => {
+        try { await window.supabaseAdmin.signOutAdmin(); } catch (error) { window.supabaseAdmin.showAuthError(document.querySelector("[data-auth-status]"), error); }
+      });
+    </script>
+  </body>
+</html>

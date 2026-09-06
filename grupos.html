@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Encuentra un grupo de conexión en Cali."
+    />
+    <title>Grupos | Iglesia del Nazareno Cali | NZRN</title>
+    <meta name="description" content="Encuentra un grupo de conexión cerca de ti en Cali y vive la fe en comunidad con Nazareno Cali." />
+    <link rel="icon" type="image/png" href="Media/logoNegro.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=Cormorant+Garamond:ital,wght@0,500;1,500;1,600&family=Sora:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header" data-header>
+      <a
+        class="brand"
+        href="index.html"
+        aria-label="Iglesia del Nazareno Cali, inicio"
+        ><img
+          class="brand-logo"
+          src="Media/logoNegro.png"
+          alt="Iglesia del Nazareno Cali"
+      /></a>
+      <nav class="main-nav" aria-label="Navegación principal">
+        <a href="index.html">Inicio</a><a href="visitanos.html">Visítanos</a
+        ><a href="ministerios.html">Ministerios</a
+        ><a class="active" href="grupos.html">Grupos</a
+        ><a href="eventos.html">Eventos</a><a href="mensajes.html">Mensajes</a
+        ><a href="contacto.html">Contacto</a>
+      </nav>
+      <div class="header-actions">
+        <a class="live-pill" href="mensajes.html"
+          ><span class="live-dot"></span>Ver en vivo</a
+        ><button
+          class="menu-button"
+          type="button"
+          aria-expanded="false"
+          aria-controls="mobile-nav"
+          aria-label="Abrir menú"
+        >
+          <span></span><span></span>
+        </button>
+      </div>
+    </header>
+    <div class="mobile-nav" id="mobile-nav" aria-hidden="true">
+      <div class="mobile-nav-head">
+        <span>Explora Nazareno</span><span>MENÚ</span>
+      </div>
+      <a href="index.html">Inicio <small>01</small></a
+      ><a href="visitanos.html">Visítanos <small>02</small></a
+      ><a href="ministerios.html">Ministerios <small>03</small></a
+      ><a href="grupos.html">Grupos <small>04</small></a
+      ><a href="eventos.html">Eventos <small>05</small></a
+      ><a href="mensajes.html">En vivo y prédicas <small>06</small></a
+      ><a href="contacto.html">Contacto <small>07</small></a
+      ><a class="mobile-live" href="mensajes.html"
+        ><span class="live-dot"></span> Ver la transmisión</a
+      >
+    </div>
+    <main class="inner-page">
+      <div class="inner-hero inner-hero-dark">
+        <p class="eyebrow">05 · Grupos de conexión</p>
+        <h1>Encuentra tu<br /><em>grupo.</em></h1>
+        <p class="inner-lead">
+          La fe se disfruta mejor acompañados. Busca una comunidad cerca de ti y
+          conoce a sus líderes.
+        </p>
+      </div>
+      <section class="groups-experience inner-groups">
+        <aside class="groups-list">
+          <div class="groups-list-head">
+            <label for="group-search">Buscar grupo</label
+            ><input
+              id="group-search"
+              type="search"
+              placeholder="Barrio, día o líder"
+            /><span data-group-count></span>
+          </div>
+          <div class="groups-results" data-groups-results></div>
+        </aside>
+        <div class="groups-map-wrap">
+          <div
+            id="groups-map"
+            aria-label="Mapa de Grupos de Conexión en Cali"
+          ></div>
+          <p class="groups-privacy">
+            Las ubicaciones son aproximadas por seguridad. El líder confirma la
+            dirección al contactarte.
+          </p>
+        </div>
+      </section>
+      <a class="next-page" href="mensajes.html"
+        >Escucha una prédica <span>↗</span></a
+      >
+    </main>
+    <footer class="site-footer">
+      <div class="footer-bottom">
+        <span>© 2026 Iglesia del Nazareno Cali</span><span>Cali, Colombia</span>
+        <div>
+          <a href="contacto.html">Contacto</a
+          ><a href="https://wa.link/62syyk" target="_blank" rel="noreferrer"
+            >WhatsApp</a
+          >
+        </div>
+      </div>
+    </footer>
+    <script
+      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+      crossorigin=""
+    ></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-client.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>

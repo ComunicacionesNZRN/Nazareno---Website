@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Eventos | Nazareno Admin</title>
+    <link rel="icon" type="image/png" href="../Media/logoNegro.png" />
+    <link rel="stylesheet" href="admin.css" />
+  </head>
+  <body data-admin-protected="true">
+    <div class="admin-shell">
+      <aside class="admin-sidebar">
+        <a class="admin-brand" href="index.html"><img src="../Media/logoNegro.png" alt="" /> Nazareno Admin</a>
+        <nav class="admin-nav" aria-label="Administración"><a href="index.html">Dashboard</a><a class="is-active" href="eventos.html">Eventos</a><a href="index.html#grupos">Grupos</a><a href="index.html#configuracion">Configuración</a></nav>
+        <p class="admin-sidebar-footer">Contenido privado de Iglesia del Nazareno Cali.</p>
+      </aside>
+      <main class="admin-main">
+        <header class="admin-topbar"><div><p class="admin-eyebrow">01 · Agenda</p><h1 class="admin-title">Eventos.</h1><p class="admin-lead">Agrega las actividades que aparecerán en la agenda pública.</p></div><div class="admin-user"><span>Sesión activa<br /><strong data-admin-email>Cargando...</strong></span><button class="admin-button admin-button-danger" type="button" data-sign-out>Cerrar sesión</button></div></header>
+        <section class="admin-panel" aria-labelledby="new-event-title"><p class="admin-eyebrow">Nuevo registro</p><h2 id="new-event-title">Agregar evento</h2><form class="admin-form" data-event-form><div class="admin-field"><label for="event-title">Título</label><input id="event-title" name="titulo" required /></div><div class="admin-field"><label for="event-date">Fecha</label><input id="event-date" name="fecha" type="date" required /></div><div class="admin-field"><label for="event-time">Hora</label><input id="event-time" name="hora" type="time" required /></div><div class="admin-field"><label for="event-status">Estado</label><select id="event-status" name="estado" required><option value="próximo">Próximo</option><option value="agotado">Cupos agotados</option><option value="finalizado">Finalizado</option><option value="cancelado">Cancelado</option></select></div><div class="admin-field admin-field-full"><label for="event-image">Imagen</label><input id="event-image" name="imagen" type="file" accept="image/jpeg,image/png,image/webp" /><span class="admin-file-note">Se subirá al bucket público eventos.</span></div><div class="admin-field"><label for="event-image-url">URL de imagen</label><input id="event-image-url" name="imagen_url" type="url" placeholder="Opcional si no subes archivo" /></div><div class="admin-field"><label for="event-registration">Link de registro</label><input id="event-registration" name="link_registro" type="url" placeholder="https://..." /></div><div class="admin-form-actions"><button class="admin-button-primary" type="submit" data-submit-event>Guardar evento</button><span class="admin-file-note">La fila se guardará en la tabla eventos.</span></div><p class="admin-status" data-event-status role="status"></p></form></section>
+        <section class="admin-panel" aria-labelledby="events-list-title" style="margin-top: 24px"><p class="admin-eyebrow">Contenido publicado</p><h2 id="events-list-title">Eventos actuales</h2><div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>Imagen</th><th>Título</th><th>Fecha</th><th>Hora</th><th>Estado</th><th>Acción</th></tr></thead><tbody data-events-list><tr><td colspan="6" class="admin-empty">Cargando eventos...</td></tr></tbody></table></div><p class="admin-status" data-list-status role="status"></p></section>
+      </main>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/supabase-client.js"></script>
+    <script src="./admin-auth.js"></script>
+    <script>
+      const eventsList = document.querySelector("[data-events-list]");
+      const eventForm = document.querySelector("[data-event-form]");
+      const eventStatus = document.querySelector("[data-event-status]");
+      const listStatus = document.querySelector("[data-list-status]");
+      const submitButton = document.querySelector("[data-submit-event]");
+      let activeUser = null;
+
+      const escapeHtml = (value = "") => String(value).replace(/[&<>'"]/g, (character) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" })[character]);
+      const formatDate = (value) => value ? new Intl.DateTimeFormat("es-CO", { dateStyle: "medium" }).format(new Date(`${value}T12:00:00`)) : "Sin fecha";
+
+      const renderEvents = (events) => {
+        if (!events.length) {
+          eventsList.innerHTML = '<tr><td colspan="6" class="admin-empty">Todavía no hay eventos registrados.</td></tr>';
+          return;
+        }
+        eventsList.innerHTML = events.map((event) => `<tr><td>${event.imagen_fondo ? `<img src="${escapeHtml(event.imagen_fondo)}" alt="" />` : "Sin imagen"}</td><td>${escapeHtml(event.titulo)}</td><td>${escapeHtml(formatDate(event.fecha))}</td><td>${escapeHtml(event.hora)}</td><td>${escapeHtml(event.estado)}</td><td><button class="admin-button admin-button-danger" type="button" data-delete-event="${escapeHtml(event.id)}">Eliminar</button></td></tr>`).join("");
+        eventsList.querySelectorAll("[data-delete-event]").forEach((button) => button.addEventListener("click", () => deleteEvent(button.dataset.deleteEvent)));
+      };
+
+      const loadEvents = async () => {
+        const { data, error } = await window.supabaseAdmin.client.from("eventos").select("id, titulo, fecha, hora, estado, imagen_fondo, link_registro").order("fecha", { ascending: true });
+        if (error) { listStatus.textContent = error.message; return; }
+        renderEvents(data || []);
+      };
+
+      const uploadImage = async (file) => {
+        if (!file) return null;
+        const extension = file.name.split(".").pop().toLowerCase();
+        const path = `${crypto.randomUUID()}.${extension}`;
+        const { error } = await window.supabaseAdmin.client.storage.from("eventos").upload(path, file, { cacheControl: "3600", upsert: false, contentType: file.type });
+        if (error) throw error;
+        const { data } = window.supabaseAdmin.client.storage.from("eventos").getPublicUrl(path);
+        return data.publicUrl;
+      };
+
+      eventForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        eventStatus.textContent = "Guardando...";
+        submitButton.disabled = true;
+        try {
+          const formData = new FormData(eventForm);
+          const imageUrl = await uploadImage(formData.get("imagen"));
+          const record = { titulo: formData.get("titulo"), fecha: formData.get("fecha"), hora: formData.get("hora"), estado: formData.get("estado"), imagen_fondo: imageUrl || formData.get("imagen_url") || null, link_registro: formData.get("link_registro") || null, created_by: activeUser.id };
+          const { error } = await window.supabaseAdmin.client.from("eventos").insert(record);
+          if (error) throw error;
+          eventForm.reset();
+          eventStatus.textContent = "Evento guardado correctamente.";
+          await loadEvents();
+        } catch (error) { eventStatus.textContent = error.message || "No fue posible guardar el evento."; }
+        finally { submitButton.disabled = false; }
+      });
+
+      const deleteEvent = async (id) => {
+        if (!window.confirm("¿Eliminar este evento?")) return;
+        const { error } = await window.supabaseAdmin.client.from("eventos").delete().eq("id", id);
+        if (error) { listStatus.textContent = error.message; return; }
+        listStatus.textContent = "Evento eliminado.";
+        await loadEvents();
+      };
+
+      (async () => {
+        try { activeUser = await window.supabaseAdmin.requireAdminSession(); if (!activeUser) return; document.querySelector("[data-admin-email]").textContent = activeUser.email; await loadEvents(); }
+        catch (error) { window.supabaseAdmin.showAuthError(listStatus, error); }
+      })();
+      document.querySelector("[data-sign-out]").addEventListener("click", async () => { try { await window.supabaseAdmin.signOutAdmin(); } catch (error) { window.supabaseAdmin.showAuthError(listStatus, error); } });
+    </script>
+  </body>
+</html>

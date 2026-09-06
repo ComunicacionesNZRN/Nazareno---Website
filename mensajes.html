@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Mira las transmisiones y prédicas de la Iglesia del Nazareno Cali."
+    />
+    <title>Mensajes | Iglesia del Nazareno Cali | NZRN</title>
+    <meta name="description" content="Mira mensajes, prédicas y transmisiones de la Iglesia del Nazareno Cali desde cualquier lugar." />
+    <link rel="icon" type="image/png" href="Media/logoNegro.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=Cormorant+Garamond:ital,wght@0,500;1,500;1,600&family=Sora:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header" data-header>
+      <a
+        class="brand"
+        href="index.html"
+        aria-label="Iglesia del Nazareno Cali, inicio"
+        ><img
+          class="brand-logo"
+          src="Media/logoNegro.png"
+          alt="Iglesia del Nazareno Cali"
+      /></a>
+      <nav class="main-nav" aria-label="Navegación principal">
+        <a href="index.html">Inicio</a><a href="visitanos.html">Visítanos</a
+        ><a href="ministerios.html">Ministerios</a
+        ><a href="grupos.html">Grupos</a><a href="eventos.html">Eventos</a
+        ><a class="active" href="mensajes.html">Mensajes</a
+        ><a href="contacto.html">Contacto</a>
+      </nav>
+      <div class="header-actions">
+        <a class="live-pill" href="mensajes.html"
+          ><span class="live-dot"></span>Ver en vivo</a
+        ><button
+          class="menu-button"
+          type="button"
+          aria-expanded="false"
+          aria-controls="mobile-nav"
+          aria-label="Abrir menú"
+        >
+          <span></span><span></span>
+        </button>
+      </div>
+    </header>
+    <div class="mobile-nav" id="mobile-nav" aria-hidden="true">
+      <div class="mobile-nav-head">
+        <span>Explora Nazareno</span><span>MENÚ</span>
+      </div>
+      <a href="index.html">Inicio <small>01</small></a
+      ><a href="visitanos.html">Visítanos <small>02</small></a
+      ><a href="ministerios.html">Ministerios <small>03</small></a
+      ><a href="grupos.html">Grupos <small>04</small></a
+      ><a href="eventos.html">Eventos <small>05</small></a
+      ><a href="mensajes.html">En vivo y prédicas <small>06</small></a
+      ><a href="contacto.html">Contacto <small>07</small></a
+      ><a class="mobile-live" href="mensajes.html"
+        ><span class="live-dot"></span> Ver la transmisión</a
+      >
+    </div>
+    <main class="inner-page">
+      <div class="inner-hero">
+        <p class="eyebrow">06 · Nazareno en línea</p>
+        <h1>Una palabra<br />para tu <em>semana.</em></h1>
+        <p class="inner-lead">
+          Mira la transmisión y vuelve a escuchar mensajes que te acompañen
+          donde estés.
+        </p>
+      </div>
+      <section class="dedicated-player">
+        <div class="player-shell">
+          <iframe
+            title="Mensaje de la Iglesia del Nazareno Cali"
+            src="https://www.youtube.com/embed/kZNdlw4Z4Nw?rel=0"
+            loading="lazy"
+            allow="
+              accelerometer;
+              autoplay;
+              clipboard-write;
+              encrypted-media;
+              gyroscope;
+              picture-in-picture;
+              web-share;
+            "
+            referrerpolicy="strict-origin-when-cross-origin"
+            allowfullscreen
+          ></iframe>
+        </div>
+        <div class="media-caption">
+          <div>
+            <p class="eyebrow">Predicación</p>
+            <h2>Escucha, comparte y vuelve cuando lo necesites.</h2>
+          </div>
+          <a
+            class="button button-dark"
+            href="https://www.youtube.com/watch?v=kZNdlw4Z4Nw"
+            target="_blank"
+            rel="noreferrer"
+            >Abrir en YouTube <span>↗</span></a
+          >
+        </div>
+      </section>
+      <a class="next-page" href="contacto.html">Hablemos <span>↗</span></a>
+    </main>
+    <footer class="site-footer">
+      <div class="footer-bottom">
+        <span>© 2026 Iglesia del Nazareno Cali</span><span>Cali, Colombia</span>
+        <div>
+          <a
+            href="https://www.youtube.com/user/nazarenocali"
+            target="_blank"
+            rel="noreferrer"
+            >YouTube</a
+          ><a href="contacto.html">Contacto</a>
+        </div>
+      </div>
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-client.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>
