@@ -14,14 +14,15 @@ if (!document.querySelector('link[href*="font-awesome"]')) {
 
 const primaryNavigation = [
   ["Inicio", "index.html"],
-  ["Visítanos", "visitanos.html"],
-  ["Primera vez", "primera-vez.html"],
+  ["Reuniones", "visitanos.html"],
+  ["¿Es tu primera vez?", "primera-vez.html"],
   ["Ministerios", "ministerios.html"],
-  ["Grupos", "grupos.html"],
   ["Eventos", "eventos.html"],
+  ["Recursos", "devocional.html"],
   ["Nosotros", "nosotros.html"],
 ];
 const utilityNavigation = [
+  ["Grupos", "grupos.html"],
   ["En vivo y prédicas", "mensajes.html"],
   ["Contacto", "contacto.html"],
 ];
@@ -63,6 +64,16 @@ if (header) {
     visitLink.innerHTML = 'Planifica tu visita <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>';
     headerActions.appendChild(visitLink);
   }
+}
+
+const mainContent = document.querySelector("main");
+if (mainContent) {
+  mainContent.id = mainContent.id || "contenido-principal";
+  const skipLink = document.createElement("a");
+  skipLink.className = "skip-link";
+  skipLink.href = `#${mainContent.id}`;
+  skipLink.textContent = "Saltar al contenido principal";
+  document.body.prepend(skipLink);
 }
 
 const setMenu = (open) => {
@@ -192,7 +203,7 @@ const eventosData = [
   { titulo: "Grupos de conexión", fecha: "Entre semana", hora: "Varias zonas de Cali", estado: "próximo", link_registro: "grupos.html", imagen_fondo: "Media/06.jpg" },
 ];
 
-const eventStatusLabels = { próximo: "Próximo", agotado: "Cupos agotados", finalizado: "Finalizado" };
+const eventStatusLabels = { próximo: "Próximo", agotado: "Cupos agotados", finalizado: "Finalizado", cancelado: "Cancelado" };
 const renderEventCard = (eventData, compact = false) => {
   const card = document.createElement("a");
   card.className = "event";
@@ -403,7 +414,7 @@ const connectionGroups = [
     leader: "Líder por confirmar",
     network: "Red de 12 por confirmar",
     address: "Dirección por confirmar con el líder",
-    contact: "https://wa.me/57",
+    contact: "contacto.html",
     lat: 3.4341,
     lng: -76.5455,
   },
@@ -414,7 +425,7 @@ const connectionGroups = [
     leader: "Líder por confirmar",
     network: "Red de 12 por confirmar",
     address: "Dirección por confirmar con el líder",
-    contact: "https://wa.me/57",
+    contact: "contacto.html",
     lat: 3.3678,
     lng: -76.5346,
   },
@@ -425,7 +436,7 @@ const connectionGroups = [
     leader: "Líder por confirmar",
     network: "Red de 12 por confirmar",
     address: "Dirección por confirmar con el líder",
-    contact: "https://wa.me/57",
+    contact: "contacto.html",
     lat: 3.4809,
     lng: -76.5152,
   },
@@ -459,7 +470,7 @@ if (mapElement && window.L) {
 
   // Plantilla de informacion mostrada al seleccionar un grupo.
   const popup = (group) =>
-    `<article class="group-popup"><strong>${group.name}</strong><p><b>Zona</b><br>${group.zone}</p><p><b>Horario</b><br>${group.day}</p><p><b>Líder del grupo</b><br>${group.leader}</p><p><b>Red de 12</b><br>${group.network}</p><p><b>Dirección</b><br>${group.address}</p><a href="${group.contact}" target="_blank" rel="noreferrer">Solicitar información por WhatsApp ↗</a></article>`;
+    `<article class="group-popup"><strong>${group.name}</strong><p><b>Zona</b><br>${group.zone}</p><p><b>Horario</b><br>${group.day}</p><p><b>Líder del grupo</b><br>${group.leader}</p><p><b>Red de 12</b><br>${group.network}</p><p><b>Dirección</b><br>${group.address}</p><a href="${group.contact}">Solicitar información ↗</a></article>`;
   connectionGroups.forEach((group) => {
     const marker = L.marker([group.lat, group.lng], { icon: markerIcon })
       .addTo(groupsMap)

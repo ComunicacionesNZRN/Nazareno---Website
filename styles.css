@@ -32,6 +32,25 @@ a {
   color: inherit;
   text-decoration: none;
 }
+*:focus-visible {
+  outline: 3px solid #9e8aff;
+  outline-offset: 4px;
+}
+.skip-link {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 2000;
+  padding: 10px 14px;
+  transform: translateY(-180%);
+  background: var(--ink);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+}
+.skip-link:focus {
+  transform: translateY(0);
+}
 img {
   display: block;
   width: 100%;
@@ -47,7 +66,7 @@ button {
 .site-header {
   position: fixed;
   inset: 0 0 auto;
-  z-index: 1100;
+  z-index: 1200;
   height: 88px;
   padding: 0 4.5vw;
   display: flex;
@@ -1304,6 +1323,7 @@ button {
     align-content: start;
     column-gap: 5vw;
     padding: 105px 6vw 35px;
+    overflow-y: auto;
     background: #fff;
     color: var(--ink);
     border-radius: 0 0 var(--radius) var(--radius);
@@ -1635,6 +1655,89 @@ button {
     padding: 9px 10px;
   }
 }
+@media (max-width: 960px) and (min-width: 701px) {
+  .site-header .main-nav {
+    display: none;
+  }
+  .site-header .menu-button {
+    display: flex;
+    width: 37px;
+    height: 30px;
+    padding: 4px 0;
+    background: transparent;
+    flex-direction: column;
+    justify-content: center;
+    gap: 7px;
+  }
+  .site-header .menu-button span {
+    width: 30px;
+    height: 2px;
+    background: var(--ink);
+  }
+  .mobile-nav {
+    position: fixed;
+    inset: 0;
+    z-index: 1150;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(180px, 0.7fr);
+    align-content: start;
+    gap: 0 5vw;
+    padding: 105px 6vw 35px;
+    background: #fff;
+    color: var(--ink);
+    transform: translateX(100%);
+    transition: transform 0.35s cubic-bezier(0.77, 0, 0.18, 1);
+  }
+  .mobile-nav.is-open {
+    transform: translateX(0);
+  }
+  .mobile-nav-head {
+    grid-column: 1 / -1;
+    margin-bottom: 24px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(20, 20, 20, 0.35);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .mobile-nav > a:not(.mobile-live) {
+    display: flex;
+    grid-column: 1;
+    justify-content: space-between;
+    padding: 8px 0;
+    font: 700 clamp(28px, 4vw, 48px) / 1 var(--display);
+  }
+  .mobile-nav small {
+    align-self: center;
+    font: 700 10px var(--body);
+    letter-spacing: 0.1em;
+  }
+  .mobile-nav-contact {
+    grid-column: 2;
+    grid-row: 2 / span 7;
+    padding-top: 8px;
+    font-size: 13px;
+  }
+  .mobile-nav-contact strong,
+  .mobile-nav-contact a {
+    display: block;
+  }
+  .mobile-nav-contact strong {
+    margin-bottom: 8px;
+    font-size: 11px;
+    text-transform: uppercase;
+  }
+  .mobile-nav-contact a {
+    color: var(--violet);
+    font-weight: 700;
+  }
+  .mobile-nav-contact p {
+    margin: 20px 0 0;
+    color: rgba(21, 21, 21, 0.65);
+    font-size: 11px;
+  }
+}
 @media (max-width: 700px) {
   .site-header .brand {
     flex-basis: 120px;
@@ -1936,6 +2039,13 @@ button {
   color: var(--ink);
   font: inherit;
 }
+.prayer-form input:focus,
+.prayer-form textarea:focus,
+.groups-list-head input:focus {
+  border-color: var(--violet);
+  outline: 3px solid rgba(82, 48, 218, 0.22);
+  outline-offset: 2px;
+}
 .prayer-form textarea {
   min-height: 150px;
   resize: vertical;
@@ -1999,6 +2109,9 @@ button {
   .donation-qr {
     min-height: 380px;
     grid-template-columns: 1fr;
+  }
+  .map-embed {
+    height: 380px !important;
   }
 }
 

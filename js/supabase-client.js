@@ -10,5 +10,4 @@ const client = supabase.createClient(supabaseUrl, supabaseKey);
 window.supabaseAdmin = {
   client: client,
 };
-
-console.log("Conexión Global de Supabase lista");
+window._supabase = client;
