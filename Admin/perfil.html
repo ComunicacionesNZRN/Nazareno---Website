@@ -88,15 +88,17 @@
           </form>
         </section>
 
-        <!-- Panel de Administración de Colaboradores (Solo Principal) -->
+        <!-- Panel de Colaboradores (Solo Administrador Principal) -->
         <section class="admin-panel" data-collaborators-panel style="margin-top:24px">
           <p class="admin-eyebrow">Administración principal</p>
-          <h2>Agregar colaborador</h2>
-          <p class="admin-lead">Crea una cuenta con su rol asignado, contraseña temporal y define qué módulos puede administrar.</p>
+          <h2 data-collab-form-title>Agregar colaborador</h2>
+          <p class="admin-lead">Crea o actualiza colaboradores, asigna su rol y define exactamente a qué módulos tienen acceso.</p>
 
           <form class="admin-form" data-collaborator-form>
+            <input type="hidden" name="collab_id" />
+
             <div class="admin-field">
-              <label for="collaborator-email">Correo</label>
+              <label for="collaborator-email">Correo electrónico</label>
               <input id="collaborator-email" name="email" type="email" required placeholder="correo@ejemplo.com" />
             </div>
             <div class="admin-field">
@@ -104,7 +106,6 @@
               <input id="collaborator-name" name="nombre" required placeholder="Nombre del colaborador" />
             </div>
             
-            <!-- Selector de Rol Solicitado -->
             <div class="admin-field">
               <label for="collaborator-role">Rol asignado</label>
               <select id="collaborator-role" name="rol" required>
@@ -116,9 +117,9 @@
               </select>
             </div>
 
-            <div class="admin-field">
+            <div class="admin-field" data-pwd-field>
               <label for="collaborator-password">Contraseña temporal</label>
-              <input id="collaborator-password" name="password" type="password" minlength="8" required placeholder="Mínimo 8 caracteres" />
+              <input id="collaborator-password" name="password" type="password" minlength="8" placeholder="Mínimo 8 caracteres" />
             </div>
 
             <!-- Switches con Iconos -->
@@ -132,7 +133,7 @@
                     <span>Eventos</span>
                   </div>
                   <div class="admin-switch">
-                    <input type="checkbox" name="eventos" />
+                    <input type="checkbox" name="eventos" id="perm-eventos" />
                     <span class="admin-switch-slider"></span>
                   </div>
                 </label>
@@ -143,7 +144,7 @@
                     <span>Grupos</span>
                   </div>
                   <div class="admin-switch">
-                    <input type="checkbox" name="grupos" />
+                    <input type="checkbox" name="grupos" id="perm-grupos" />
                     <span class="admin-switch-slider"></span>
                   </div>
                 </label>
@@ -154,7 +155,7 @@
                     <span>Carrusel</span>
                   </div>
                   <div class="admin-switch">
-                    <input type="checkbox" name="carrusel" />
+                    <input type="checkbox" name="carrusel" id="perm-carrusel" />
                     <span class="admin-switch-slider"></span>
                   </div>
                 </label>
@@ -165,7 +166,7 @@
                     <span>Devocionales</span>
                   </div>
                   <div class="admin-switch">
-                    <input type="checkbox" name="devocionales" />
+                    <input type="checkbox" name="devocionales" id="perm-devocionales" />
                     <span class="admin-switch-slider"></span>
                   </div>
                 </label>
@@ -176,7 +177,7 @@
                     <span>Configuración</span>
                   </div>
                   <div class="admin-switch">
-                    <input type="checkbox" name="configuracion" />
+                    <input type="checkbox" name="configuracion" id="perm-configuracion" />
                     <span class="admin-switch-slider"></span>
                   </div>
                 </label>
@@ -185,7 +186,8 @@
             </div>
 
             <div class="admin-form-actions">
-              <button class="admin-button-primary" type="submit">Crear colaborador</button>
+              <button class="admin-button-primary" type="submit" data-submit-collab>Crear colaborador</button>
+              <button class="admin-button" type="button" data-cancel-collab-edit hidden>Cancelar edición</button>
             </div>
             <p class="admin-status" data-collaborator-status role="status"></p>
           </form>
@@ -200,11 +202,12 @@
                   <th>Rol</th>
                   <th>Permisos</th>
                   <th>Estado</th>
+                  <th>Acciones</th>
                 </tr>
               </thead>
               <tbody data-collaborators-list>
                 <tr>
-                  <td colspan="5" class="admin-empty">Cargando colaboradores...</td>
+                  <td colspan="6" class="admin-empty">Cargando colaboradores...</td>
                 </tr>
               </tbody>
             </table>
@@ -222,10 +225,14 @@
       const profileStatus = document.querySelector("[data-profile-status]");
       const collaboratorsPanel = document.querySelector("[data-collaborators-panel]");
       const collaboratorForm = document.querySelector("[data-collaborator-form]");
+      const collabFormTitle = document.querySelector("[data-collab-form-title]");
+      const submitCollabBtn = document.querySelector("[data-submit-collab]");
+      const cancelCollabBtn = document.querySelector("[data-cancel-collab-edit]");
       const collaboratorStatus = document.querySelector("[data-collaborator-status]");
       const collaboratorsList = document.querySelector("[data-collaborators-list]");
 
       const permissions = ["eventos", "grupos", "carrusel", "devocionales", "configuracion"];
+      let collabRows = [];
 
       const escapeHtml = (value = "") =>
         String(value).replace(/[&<>'"]/g, (char) => ({
@@ -236,6 +243,43 @@
           '"': "&quot;"
         })[char]);
 
+      const fillCollabForm = (item) => {
+        collaboratorForm.elements.collab_id.value = item.usuario_id;
+        collaboratorForm.elements.email.value = item.correo || "";
+        collaboratorForm.elements.email.readOnly = true;
+        collaboratorForm.elements.nombre.value = item.nombre || "";
+        collaboratorForm.elements.rol.value = item.rol || "colaborador";
+        
+        // Desactivar campo contraseña obligatoria en edición
+        const pwdInput = collaboratorForm.elements.password;
+        pwdInput.required = false;
+        pwdInput.placeholder = "Dejar en blanco para no cambiar";
+
+        permissions.forEach((perm) => {
+          const chk = collaboratorForm.elements[perm];
+          if (chk) chk.checked = Boolean(item.permisos?.[perm]);
+        });
+
+        collabFormTitle.textContent = "Editar colaborador";
+        submitCollabBtn.textContent = "Actualizar colaborador";
+        cancelCollabBtn.hidden = false;
+        collaboratorStatus.textContent = "";
+        collaboratorForm.scrollIntoView({ behavior: "smooth" });
+      };
+
+      const resetCollabForm = () => {
+        collaboratorForm.reset();
+        collaboratorForm.elements.collab_id.value = "";
+        collaboratorForm.elements.email.readOnly = false;
+        const pwdInput = collaboratorForm.elements.password;
+        pwdInput.required = true;
+        pwdInput.placeholder = "Mínimo 8 caracteres";
+        collabFormTitle.textContent = "Agregar colaborador";
+        submitCollabBtn.textContent = "Crear colaborador";
+        cancelCollabBtn.hidden = true;
+        collaboratorStatus.textContent = "";
+      };
+
       const loadCollaborators = async () => {
         try {
           const client = window.supabaseAdmin?.client;
@@ -243,17 +287,18 @@
 
           const { data, error } = await client
             .from("admin_perfiles")
-            .select("correo, nombre, rol, permisos, activo")
+            .select("usuario_id, correo, nombre, rol, permisos, activo")
             .order("created_at", { ascending: false });
 
           if (error) throw error;
+          collabRows = data || [];
 
-          if (!data || data.length === 0) {
-            collaboratorsList.innerHTML = '<tr><td colspan="5" class="admin-empty">No hay colaboradores registrados.</td></tr>';
+          if (!collabRows.length) {
+            collaboratorsList.innerHTML = '<tr><td colspan="6" class="admin-empty">No hay colaboradores registrados.</td></tr>';
             return;
           }
 
-          collaboratorsList.innerHTML = data
+          collaboratorsList.innerHTML = collabRows
             .map((item) => {
               const permsText = item.rol === "principal"
                 ? "Todos"
@@ -269,44 +314,44 @@
                 <td><span class="admin-badge ${item.rol === "principal" ? "admin-badge-violet" : ""}">${escapeHtml(formattedRole)}</span></td>
                 <td>${escapeHtml(permsText)}</td>
                 <td><span class="admin-badge ${item.activo !== false ? "admin-badge-active" : "admin-badge-inactive"}">${item.activo !== false ? "Activo" : "Inactivo"}</span></td>
+                <td style="white-space:nowrap;">
+                  <button class="admin-button" type="button" data-edit-collab="${escapeHtml(item.usuario_id)}">Editar</button>
+                  ${item.rol !== 'principal' ? `<button class="admin-button admin-button-danger" type="button" data-toggle-status="${escapeHtml(item.usuario_id)}">${item.activo !== false ? 'Desactivar' : 'Activar'}</button>` : ''}
+                </td>
               </tr>`;
             })
             .join("");
+
+          collaboratorsList.querySelectorAll("[data-edit-collab]").forEach((btn) => {
+            btn.addEventListener("click", () => {
+              const found = collabRows.find((c) => c.usuario_id === btn.dataset.editCollab);
+              if (found) fillCollabForm(found);
+            });
+          });
+
+          collaboratorsList.querySelectorAll("[data-toggle-status]").forEach((btn) => {
+            btn.addEventListener("click", () => toggleCollabStatus(btn.dataset.toggleStatus));
+          });
         } catch (error) {
           console.error("Error al cargar colaboradores:", error);
-          collaboratorsList.innerHTML = `<tr><td colspan="5" class="admin-empty">Error al cargar colaboradores: ${escapeHtml(error.message)}</td></tr>`;
+          collaboratorsList.innerHTML = `<tr><td colspan="6" class="admin-empty">Error al cargar: ${escapeHtml(error.message)}</td></tr>`;
         }
       };
 
-      // Inicialización de datos del perfil
-      (async () => {
-        try {
-          const user = await window.supabaseAdmin.requireAdminSession();
-          if (!user) return;
-
-          userEmail.textContent = user.email || "Usuario activo";
-          const profileEmailInput = document.querySelector("#profile-email");
-          if (profileEmailInput) profileEmailInput.value = user.email || "";
-
-          const profile = await window.supabaseAdmin.getAdminProfile(user);
-          const profileNameInput = document.querySelector("#profile-name");
-          if (profileNameInput && profile?.nombre) {
-            profileNameInput.value = profile.nombre;
-          }
-
-          if (profile?.rol === "principal") {
-            collaboratorsPanel.hidden = false;
-            await loadCollaborators();
-          } else {
-            collaboratorsPanel.hidden = true;
-          }
-        } catch (error) {
-          console.error("Error inicializando vista de perfil:", error);
-          profileStatus.textContent = error.message;
+      const toggleCollabStatus = async (userId) => {
+        const client = window.supabaseAdmin.client;
+        const target = collabRows.find((c) => c.usuario_id === userId);
+        if (!target) return;
+        const newStatus = target.activo === false;
+        const { error } = await client.from("admin_perfiles").update({ activo: newStatus }).eq("usuario_id", userId);
+        if (error) {
+          collaboratorStatus.textContent = error.message;
+          return;
         }
-      })();
+        await loadCollaborators();
+      };
 
-      // Guardar cambios en el perfil propio
+      // Guardar perfil propio
       profileForm.addEventListener("submit", async (event) => {
         event.preventDefault();
         profileStatus.textContent = "Guardando...";
@@ -347,47 +392,99 @@
         }
       });
 
-      // Crear nuevo colaborador con rol y permisos seleccionados
+      // Crear o Editar Colaborador
       collaboratorForm.addEventListener("submit", async (event) => {
         event.preventDefault();
-        collaboratorStatus.textContent = "Creando cuenta...";
+        collaboratorStatus.textContent = "Guardando cambios...";
+        submitCollabBtn.disabled = true;
+
         const data = new FormData(collaboratorForm);
+        const editingUserId = data.get("collab_id");
         const permissionsData = Object.fromEntries(permissions.map((key) => [key, data.get(key) === "on"]));
         const selectedRole = data.get("rol") || "colaborador";
+        const client = window.supabaseAdmin.client;
 
         try {
-          const client = window.supabaseAdmin.client;
-          const isolatedClient = window.supabase.createClient(client.supabaseUrl, client.supabaseKey, {
-            auth: { persistSession: false, autoRefreshToken: false }
-          });
+          if (editingUserId) {
+            // Modo Edición: Actualizar rol y permisos
+            const { error: updateError } = await client
+              .from("admin_perfiles")
+              .update({
+                nombre: data.get("nombre"),
+                rol: selectedRole,
+                permisos: permissionsData
+              })
+              .eq("usuario_id", editingUserId);
 
-          const { data: signUpData, error: signUpError } = await isolatedClient.auth.signUp({
-            email: data.get("email"),
-            password: data.get("password")
-          });
+            if (updateError) throw updateError;
+            collaboratorStatus.textContent = "Colaborador actualizado correctamente.";
+          } else {
+            // Modo Creación: Registrar usuario nuevo en Supabase Auth
+            const isolatedClient = window.supabase.createClient(client.supabaseUrl, client.supabaseKey, {
+              auth: { persistSession: false, autoRefreshToken: false }
+            });
 
-          if (signUpError) throw signUpError;
-          if (!signUpData.user) throw new Error("Supabase requiere confirmación de correo antes de completar la cuenta.");
+            const { data: signUpData, error: signUpError } = await isolatedClient.auth.signUp({
+              email: data.get("email"),
+              password: data.get("password")
+            });
 
-          const currentUser = (await client.auth.getUser()).data.user;
-          const { error } = await client.from("admin_perfiles").insert({
-            usuario_id: signUpData.user.id,
-            correo: data.get("email"),
-            nombre: data.get("nombre"),
-            rol: selectedRole,
-            permisos: permissionsData,
-            created_by: currentUser?.id || null
-          });
+            if (signUpError) throw signUpError;
+            if (!signUpData.user) throw new Error("Supabase requiere confirmación de correo.");
 
-          if (error) throw error;
+            const currentUser = (await client.auth.getUser()).data.user;
+            const { error: insertError } = await client.from("admin_perfiles").insert({
+              usuario_id: signUpData.user.id,
+              correo: data.get("email"),
+              nombre: data.get("nombre"),
+              rol: selectedRole,
+              permisos: permissionsData,
+              created_by: currentUser?.id || null
+            });
 
-          collaboratorForm.reset();
-          collaboratorStatus.textContent = "Colaborador creado exitosamente.";
+            if (insertError) throw insertError;
+            collaboratorStatus.textContent = "Colaborador creado exitosamente.";
+          }
+
+          resetCollabForm();
           await loadCollaborators();
         } catch (error) {
-          collaboratorStatus.textContent = error.message || "No fue posible crear el colaborador.";
+          collaboratorStatus.textContent = error.message || "No fue posible procesar la solicitud.";
+        } finally {
+          submitCollabBtn.disabled = false;
         }
       });
+
+      cancelCollabBtn.addEventListener("click", resetCollabForm);
+
+      // Inicialización de la vista
+      (async () => {
+        try {
+          const user = await window.supabaseAdmin.requireAdminSession();
+          if (!user) return;
+
+          userEmail.textContent = user.email || "Usuario activo";
+          const profileEmailInput = document.querySelector("#profile-email");
+          if (profileEmailInput) profileEmailInput.value = user.email || "";
+
+          const profile = await window.supabaseAdmin.getAdminProfile(user);
+          const profileNameInput = document.querySelector("#profile-name");
+          if (profileNameInput && profile?.nombre) {
+            profileNameInput.value = profile.nombre;
+          }
+
+          if (profile?.rol === "principal") {
+            collaboratorsPanel.hidden = false;
+            await loadCollaborators();
+          } else {
+            collaboratorsPanel.hidden = true;
+          }
+        } catch (error) {
+          profileStatus.textContent = error.message;
+        }
+      })();
+
+      document.querySelector("[data-sign-out]").addEventListener("click", () => window.supabaseAdmin.signOutAdmin());
     </script>
   </body>
 </html>

@@ -5,6 +5,9 @@ const menuButton = document.querySelector(".menu-button");
 const mobileNav = document.querySelector(".mobile-nav");
 const header = document.querySelector("[data-header]");
 
+// Acceso global seguro a Supabase (compatible con cualquier cliente inicializado)
+const getSupabaseClient = () => window._supabase || window.supabaseClient || window.supabaseAdmin?.client;
+
 if (!document.querySelector('link[href*="font-awesome"]')) {
   const iconStylesheet = document.createElement("link");
   iconStylesheet.rel = "stylesheet";
@@ -19,6 +22,7 @@ const primaryNavigation = [
   ["Actividades", "eventos.html"],
   ["Conócenos", "nosotros.html"],
 ];
+
 const utilityNavigation = [
   ["Inicio", "index.html"],
   ["Visítanos", "visitanos.html"],
@@ -28,6 +32,7 @@ const utilityNavigation = [
   ["En vivo y prédicas", "mensajes.html"],
   ["Contacto", "contacto.html"],
 ];
+
 const currentPage = window.location.pathname.split("/").pop() || "index.html";
 
 const navigationMarkup = (items, numbered = false) =>
@@ -45,6 +50,9 @@ if (header) {
   }
 }
 
+/* ========================================================================
+  CARRUSEL INTERACTIVO DE PORTADA ("DESCUBRE MÁS MANERAS DE CONECTAR")
+  ======================================================================== */
 const connectCarousel = document.querySelector("[data-connect-carousel]");
 const connectDots = document.querySelector("[data-connect-dots]");
 let connectItems = [];
@@ -58,32 +66,79 @@ const connectTransformFor = (state) =>
   state === "next" ? `translateX(calc(50% + ${CONNECT_GAP}))` :
   `translateX(calc(50% + ${CONNECT_GAP}))`;
 
-const connectTitleSize = (title = "") => title.length > 42 ? "clamp(30px, 4vw, 58px)" : title.length > 26 ? "clamp(35px, 5vw, 70px)" : "clamp(40px, 6vw, 84px)";
-const applyConnectTitleSize = () => connectCarousel?.querySelectorAll(".discover-card").forEach((slide) => {
-  const title = slide.querySelector(".discover-card-overlay strong, :scope > strong");
-  if (title) slide.style.setProperty("--connect-title-size", connectTitleSize(title.textContent.trim()));
-});
+const connectTitleSize = (title = "") =>
+  title.length > 42 ? "clamp(30px, 4vw, 58px)" :
+  title.length > 26 ? "clamp(35px, 5vw, 70px)" :
+  "clamp(40px, 6vw, 84px)";
+
+const applyConnectTitleSize = () =>
+  connectCarousel?.querySelectorAll(".discover-card").forEach((slide) => {
+    const title = slide.querySelector(".discover-card-overlay strong, :scope > strong");
+    if (title) slide.style.setProperty("--connect-title-size", connectTitleSize(title.textContent.trim()));
+  });
 
 const renderConnectCarousel = (items) => {
   if (!connectCarousel || !items.length) return;
   connectItems = items;
-  connectCarousel.innerHTML = items.map((item, index) => `<a class="discover-card ${index === 0 ? "is-active" : ""}" href="${item.link_url || "contacto.html"}" data-connect-slide="${index}"><img src="${item.image_url || "Media/01.jpg"}" alt="${item.image_alt || item.titulo}" /><span class="discover-card-overlay"><small>${item.eyebrow || (item.tipo === "fijo" ? "Actividad fija" : "Actividad del mes")}</small><strong>${item.titulo}</strong><span>${item.descripcion || "Conoce más sobre esta actividad"} ↗</span></span></a>`).join("");
-  if (connectDots) connectDots.innerHTML = items.map((_, index) => `<button type="button" class="discover-connect-dot${index === 0 ? " is-active" : ""}" data-connect-dot="${index}" aria-label="Ver contenido ${index + 1}"></button>`).join("");
-  connectCarousel.querySelectorAll("[data-connect-slide]").forEach((slide) => slide.addEventListener("click", (event) => {
-    const targetIndex = Number(slide.dataset.connectSlide);
-    if (targetIndex !== connectIndex) { event.preventDefault(); connectIndex = targetIndex; updateConnectCarousel(); }
-  }));
-  connectDots?.querySelectorAll("[data-connect-dot]").forEach((dot) => dot.addEventListener("click", () => { connectIndex = Number(dot.dataset.connectDot); updateConnectCarousel(); }));
+  connectCarousel.innerHTML = items
+    .map(
+      (item, index) =>
+        `<a class="discover-card ${index === 0 ? "is-active" : ""}" href="${item.link_url || "contacto.html"}" data-connect-slide="${index}">
+          <img src="${item.image_url || "Media/01.jpg"}" alt="${item.image_alt || item.titulo}" />
+          <span class="discover-card-overlay">
+            <small>${item.eyebrow || (item.tipo === "fijo" ? "Actividad fija" : "Actividad del mes")}</small>
+            <strong>${item.titulo}</strong>
+            <span>${item.descripcion || "Conoce más sobre esta actividad"} ↗</span>
+          </span>
+        </a>`
+    )
+    .join("");
+
+  if (connectDots) {
+    connectDots.innerHTML = items
+      .map(
+        (_, index) =>
+          `<button type="button" class="discover-connect-dot${index === 0 ? " is-active" : ""}" data-connect-dot="${index}" aria-label="Ver contenido ${index + 1}"></button>`
+      )
+      .join("");
+  }
+
+  connectCarousel.querySelectorAll("[data-connect-slide]").forEach((slide) =>
+    slide.addEventListener("click", (event) => {
+      const targetIndex = Number(slide.dataset.connectSlide);
+      if (targetIndex !== connectIndex) {
+        event.preventDefault();
+        connectIndex = targetIndex;
+        updateConnectCarousel();
+      }
+    })
+  );
+
+  connectDots?.querySelectorAll("[data-connect-dot]").forEach((dot) =>
+    dot.addEventListener("click", () => {
+      connectIndex = Number(dot.dataset.connectDot);
+      updateConnectCarousel();
+    })
+  );
+
   updateConnectCarousel();
 };
 
 const updateConnectCarousel = () => {
   if (!connectCarousel) return;
-  connectCarousel.querySelectorAll("[data-connect-slide]").forEach((slide, index) => slide.classList.toggle("is-active", index === connectIndex));
+  connectCarousel.querySelectorAll("[data-connect-slide]").forEach((slide, index) =>
+    slide.classList.toggle("is-active", index === connectIndex)
+  );
+
   connectCarousel.querySelectorAll("[data-connect-slide]").forEach((slide, index) => {
     const previous = (connectIndex - 1 + connectItems.length) % connectItems.length;
     const next = (connectIndex + 1) % connectItems.length;
-    const state = index === connectIndex ? "active" : index === previous ? "prev" : index === next ? "next" : "hidden";
+    const state =
+      index === connectIndex ? "active" :
+      index === previous ? "prev" :
+      index === next ? "next" :
+      "hidden";
+
     slide.classList.toggle("is-prev", index === previous);
     slide.classList.toggle("is-next", index === next);
     slide.style.display = state === "hidden" ? "none" : "flex";
@@ -92,47 +147,108 @@ const updateConnectCarousel = () => {
     slide.style.zIndex = state === "active" ? "2" : "1";
     slide.style.setProperty("transform", connectTransformFor(state), "important");
   });
-  connectDots?.querySelectorAll("[data-connect-dot]").forEach((dot, index) => dot.classList.toggle("is-active", index === connectIndex));
+
+  connectDots?.querySelectorAll("[data-connect-dot]").forEach((dot, index) =>
+    dot.classList.toggle("is-active", index === connectIndex)
+  );
+
   connectCarousel.style.setProperty("--connect-index", connectIndex);
   applyConnectTitleSize();
+
   window.clearTimeout(connectAnimationTimer);
   connectAnimationTimer = window.setTimeout(() => {
     connectCarousel.querySelectorAll("[data-connect-slide]").forEach((slide, index) => {
       const previous = (connectIndex - 1 + connectItems.length) % connectItems.length;
       const next = (connectIndex + 1) % connectItems.length;
-      const state = index === connectIndex ? "active" : index === previous ? "prev" : index === next ? "next" : "hidden";
+      const state =
+        index === connectIndex ? "active" :
+        index === previous ? "prev" :
+        index === next ? "next" :
+        "hidden";
       slide.style.setProperty("transform", connectTransformFor(state), "important");
       slide.style.transition = "none";
     });
-    window.requestAnimationFrame(() => connectCarousel.querySelectorAll("[data-connect-slide]").forEach((slide) => { slide.style.transition = ""; }));
+    window.requestAnimationFrame(() =>
+      connectCarousel.querySelectorAll("[data-connect-slide]").forEach((slide) => {
+        slide.style.transition = "";
+      })
+    );
   }, 620);
 };
 
-document.querySelector("[data-connect-prev]")?.addEventListener("click", () => { if (connectItems.length) { connectIndex = (connectIndex - 1 + connectItems.length) % connectItems.length; updateConnectCarousel(); } });
-document.querySelector("[data-connect-next]")?.addEventListener("click", () => { if (connectItems.length) { connectIndex = (connectIndex + 1) % connectItems.length; updateConnectCarousel(); } });
+document.querySelector("[data-connect-prev]")?.addEventListener("click", () => {
+  if (connectItems.length) {
+    connectIndex = (connectIndex - 1 + connectItems.length) % connectItems.length;
+    updateConnectCarousel();
+  }
+});
+
+document.querySelector("[data-connect-next]")?.addEventListener("click", () => {
+  if (connectItems.length) {
+    connectIndex = (connectIndex + 1) % connectItems.length;
+    updateConnectCarousel();
+  }
+});
 
 const loadConnectCarousel = async () => {
-  if (!connectCarousel || !window._supabase) return;
-  const month = new Date().getMonth() + 1;
-  const { data, error } = await window._supabase.from("carrusel_conexion").select("*").eq("activo", true).order("orden", { ascending: true });
-  if (error || !data?.length) return;
-  const currentItems = data.filter((item) => item.tipo === "fijo" || item.mes === month);
-  if (currentItems.length) renderConnectCarousel(currentItems);
+  const sb = getSupabaseClient();
+  if (!connectCarousel || !sb) return;
+  try {
+    const month = new Date().getMonth() + 1;
+    const { data, error } = await sb
+      .from("carrusel_conexion")
+      .select("*")
+      .eq("activo", true)
+      .order("orden", { ascending: true });
+
+    if (error || !data?.length) return;
+    const currentItems = data.filter((item) => item.tipo === "fijo" || item.mes === month);
+    if (currentItems.length) renderConnectCarousel(currentItems);
+  } catch (err) {
+    console.warn("Aviso carrusel:", err);
+  }
 };
 
 if (connectCarousel) {
   const fallbackSlides = [...connectCarousel.querySelectorAll(".discover-card")];
-  connectItems = fallbackSlides;
-  fallbackSlides.forEach((slide, index) => { slide.dataset.connectSlide = index; slide.classList.toggle("is-active", index === 0); });
-  if (connectDots) connectDots.innerHTML = fallbackSlides.map((_, index) => `<button type="button" class="discover-connect-dot${index === 0 ? " is-active" : ""}" data-connect-dot="${index}" aria-label="Ver contenido ${index + 1}"></button>`).join("");
-  fallbackSlides.forEach((slide) => slide.addEventListener("click", (event) => {
-    const targetIndex = Number(slide.dataset.connectSlide);
-    if (targetIndex !== connectIndex) { event.preventDefault(); connectIndex = targetIndex; updateConnectCarousel(); }
-  }));
-  connectDots?.querySelectorAll("[data-connect-dot]").forEach((dot) => dot.addEventListener("click", () => { connectIndex = Number(dot.dataset.connectDot); updateConnectCarousel(); }));
-  updateConnectCarousel();
+  if (fallbackSlides.length) {
+    connectItems = fallbackSlides;
+    fallbackSlides.forEach((slide, index) => {
+      slide.dataset.connectSlide = index;
+      slide.classList.toggle("is-active", index === 0);
+    });
+    if (connectDots) {
+      connectDots.innerHTML = fallbackSlides
+        .map(
+          (_, index) =>
+            `<button type="button" class="discover-connect-dot${index === 0 ? " is-active" : ""}" data-connect-dot="${index}" aria-label="Ver contenido ${index + 1}"></button>`
+        )
+        .join("");
+    }
+    fallbackSlides.forEach((slide) =>
+      slide.addEventListener("click", (event) => {
+        const targetIndex = Number(slide.dataset.connectSlide);
+        if (targetIndex !== connectIndex) {
+          event.preventDefault();
+          connectIndex = targetIndex;
+          updateConnectCarousel();
+        }
+      })
+    );
+    connectDots?.querySelectorAll("[data-connect-dot]").forEach((dot) =>
+      dot.addEventListener("click", () => {
+        connectIndex = Number(dot.dataset.connectDot);
+        updateConnectCarousel();
+      })
+    );
+    updateConnectCarousel();
+  }
   loadConnectCarousel();
 }
+
+/* ========================================================================
+  MENÚ LATERAL MÓVIL Y ACCIONES
+  ======================================================================== */
 if (mobileNav) {
   const menuSections = [
     ["Participa", [
@@ -153,7 +269,18 @@ if (mobileNav) {
       ["Contacto", "Hablemos por WhatsApp", "contacto.html", "fa-message"],
     ]],
   ];
-  const menuSectionMarkup = menuSections.map(([heading, items]) => `<section class="menu-section"><h2>${heading}</h2><div class="menu-section-items">${items.map(([label, description, href, icon]) => `<a class="menu-item" href="${href}"><span class="menu-item-icon"><i class="fa-solid ${icon}" aria-hidden="true"></i></span><span><strong>${label}</strong><small>${description}</small></span><b aria-hidden="true">↗</b></a>`).join("")}</div></section>`).join("");
+  const menuSectionMarkup = menuSections
+    .map(
+      ([heading, items]) =>
+        `<section class="menu-section"><h2>${heading}</h2><div class="menu-section-items">${items
+          .map(
+            ([label, description, href, icon]) =>
+              `<a class="menu-item" href="${href}"><span class="menu-item-icon"><i class="fa-solid ${icon}" aria-hidden="true"></i></span><span><strong>${label}</strong><small>${description}</small></span><b aria-hidden="true">↗</b></a>`
+          )
+          .join("")}</div></section>`
+    )
+    .join("");
+
   mobileNav.innerHTML = `<div class="mobile-nav-head"><div><span class="nav-kicker">Explora Nazareno</span><h2>Encuentra tu<br /><em>lugar.</em></h2></div><span class="nav-menu-label">MENÚ</span></div><p class="mobile-nav-intro">Conecta con la iglesia, encuentra información y da tu próximo paso.</p>${menuSectionMarkup}<div class="mobile-nav-contact"><strong>Hablemos</strong><a href="https://wa.link/62syyk" target="_blank" rel="noreferrer">WhatsApp ↗</a><p>Cali · Colombia</p></div>`;
 }
 
@@ -190,17 +317,12 @@ const setMenu = (open) => {
 };
 
 if (menuButton && mobileNav) {
-  menuButton.addEventListener("click", () => {
-    setMenu(menuButton.getAttribute("aria-expanded") !== "true");
-  });
-
-  mobileNav.querySelectorAll("a").forEach((link) => {
-    link.addEventListener("click", () => setMenu(false));
-  });
+  menuButton.addEventListener("click", () => setMenu(menuButton.getAttribute("aria-expanded") !== "true"));
+  mobileNav.querySelectorAll("a").forEach((link) => link.addEventListener("click", () => setMenu(false)));
 }
 
 const updateHeader = () => {
-  header.classList.toggle("is-scrolled", window.scrollY > 20);
+  if (header) header.classList.toggle("is-scrolled", window.scrollY > 20);
 };
 
 updateHeader();
@@ -210,7 +332,7 @@ window.addEventListener("scroll", updateHeader, { passive: true });
   2. TITULOS ANIMADOS SEGUN EL SCROLL
   ======================================================================== */
 const scrollTitles = document.querySelectorAll(
-  ".hero h1, .manifesto h2, .community-heading h2, .visit h2, .agenda-head h2, .media-intro h2, .groups-intro h2, .inner-hero h1, .inner-band h2, .info-panel h2, .contact-grid h2, .feature-list h2, .feature-list h3, .event-calendar h2, .dedicated-player .media-caption h2",
+  ".hero h1, .manifesto h2, .community-heading h2, .visit h2, .media-intro h2, .groups-intro h2, .inner-hero h1, .inner-band h2, .info-panel h2, .contact-grid h2, .feature-list h2, .feature-list h3, .dedicated-player .media-caption h2",
 );
 let scrollTitlesTicking = false;
 
@@ -219,10 +341,7 @@ const updateScrollTitles = () => {
     const bounds = title.getBoundingClientRect();
     const progress = Math.min(
       1,
-      Math.max(
-        0,
-        (window.innerHeight * 0.82 - bounds.top) / (window.innerHeight * 0.48),
-      ),
+      Math.max(0, (window.innerHeight * 0.82 - bounds.top) / (window.innerHeight * 0.48)),
     );
     title.style.setProperty("--title-progress", progress.toFixed(3));
   });
@@ -240,7 +359,7 @@ updateScrollTitles();
 window.addEventListener("scroll", requestScrollTitlesUpdate, { passive: true });
 
 /* ========================================================================
-  3. PESTANAS DE CONTENIDO AUDIOVISUAL DE LA PORTADA
+  3. PESTAÑAS DE CONTENIDO AUDIOVISUAL DE LA PORTADA
   ======================================================================== */
 const tabs = document.querySelectorAll("[data-media-tab]");
 const panels = document.querySelectorAll("[data-media-panel]");
@@ -269,16 +388,36 @@ tabs.forEach((tab) => {
 const dedicatedPlayer = document.querySelector(".dedicated-player");
 
 if (dedicatedPlayer) {
-  const dedicatedLead =
-    dedicatedPlayer.previousElementSibling?.querySelector(".inner-lead");
+  const dedicatedLead = dedicatedPlayer.previousElementSibling?.querySelector(".inner-lead");
   if (dedicatedLead) {
-    dedicatedLead.textContent =
-      "Escoge entre el mensaje editado o la experiencia completa de nuestra última transmisión.";
+    dedicatedLead.textContent = "Escoge entre el mensaje editado o la experiencia completa de nuestra última transmisión.";
   }
-  dedicatedPlayer.innerHTML = `<div class="media-tabs inner-media-tabs" role="tablist" aria-label="Opciones de reproducción"><button class="media-tab is-active" type="button" role="tab" id="sermon-tab" aria-selected="true" aria-controls="sermon-panel" data-media-tab="sermon">Mirar prédica</button><button class="media-tab" type="button" role="tab" id="experience-tab" aria-selected="false" aria-controls="experience-panel" data-media-tab="experience">Mirar experiencia completa</button></div><div class="media-panel is-active" role="tabpanel" id="sermon-panel" aria-labelledby="sermon-tab" data-media-panel="sermon"><div class="player-shell"><iframe title="Prédica editada de la Iglesia del Nazareno Cali" src="https://www.youtube.com/embed/kZNdlw4Z4Nw?rel=0" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div><div class="media-caption"><div><p class="eyebrow">Mirar prédica</p><h2>El mensaje, directo al corazón.</h2></div><a class="button button-dark" href="https://www.youtube.com/watch?v=kZNdlw4Z4Nw" target="_blank" rel="noreferrer">Mirar en YouTube <span>↗</span></a></div></div><div class="media-panel" role="tabpanel" id="experience-panel" aria-labelledby="experience-tab" hidden data-media-panel="experience"><div class="player-shell"><iframe title="Experiencia completa de la Iglesia del Nazareno Cali" src="https://www.youtube.com/embed/LWOoJB_YuL8?rel=0" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div><div class="media-caption"><div><p class="eyebrow">Mirar experiencia completa</p><h2>Alabanza, prédica y despedida en una sola experiencia.</h2></div><a class="button button-dark" href="https://www.youtube.com/watch?v=LWOoJB_YuL8" target="_blank" rel="noreferrer">Mirar en YouTube <span>↗</span></a></div></div>`;
+  dedicatedPlayer.innerHTML = `
+    <div class="media-tabs inner-media-tabs" role="tablist" aria-label="Opciones de reproducción">
+      <button class="media-tab is-active" type="button" role="tab" id="sermon-tab" aria-selected="true" aria-controls="sermon-panel" data-media-tab="sermon">Mirar prédica</button>
+      <button class="media-tab" type="button" role="tab" id="experience-tab" aria-selected="false" aria-controls="experience-panel" data-media-tab="experience">Mirar experiencia completa</button>
+    </div>
+    <div class="media-panel is-active" role="tabpanel" id="sermon-panel" aria-labelledby="sermon-tab" data-media-panel="sermon">
+      <div class="player-shell">
+        <iframe title="Prédica editada de la Iglesia del Nazareno Cali" src="https://www.youtube.com/embed/kZNdlw4Z4Nw?rel=0" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+      </div>
+      <div class="media-caption">
+        <div><p class="eyebrow">Mirar prédica</p><h2>El mensaje, directo al corazón.</h2></div>
+        <a class="button button-dark" href="https://www.youtube.com/watch?v=kZNdlw4Z4Nw" target="_blank" rel="noreferrer">Mirar en YouTube <span>↗</span></a>
+      </div>
+    </div>
+    <div class="media-panel" role="tabpanel" id="experience-panel" aria-labelledby="experience-tab" hidden data-media-panel="experience">
+      <div class="player-shell">
+        <iframe title="Experiencia completa de la Iglesia del Nazareno Cali" src="https://www.youtube.com/embed/LWOoJB_YuL8?rel=0" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+      </div>
+      <div class="media-caption">
+        <div><p class="eyebrow">Mirar experiencia completa</p><h2>Alabanza, prédica y despedida en una sola experiencia.</h2></div>
+        <a class="button button-dark" href="https://www.youtube.com/watch?v=LWOoJB_YuL8" target="_blank" rel="noreferrer">Mirar en YouTube <span>↗</span></a>
+      </div>
+    </div>`;
+
   const dedicatedTabs = dedicatedPlayer.querySelectorAll("[data-media-tab]");
-  const dedicatedPanels =
-    dedicatedPlayer.querySelectorAll("[data-media-panel]");
+  const dedicatedPanels = dedicatedPlayer.querySelectorAll("[data-media-panel]");
   dedicatedTabs.forEach((tab) =>
     tab.addEventListener("click", () => {
       dedicatedTabs.forEach((item) => {
@@ -291,88 +430,212 @@ if (dedicatedPlayer) {
         panel.classList.toggle("is-active", active);
         panel.hidden = !active;
       });
-    }),
+    })
   );
 }
 
 /* ========================================================================
-  5. TARJETAS INTERACTIVAS DE EVENTOS
+  5. EVENTOS (PORTADA BANNER + GRID ELEVATION EN EVENTOS.HTML)
   ======================================================================== */
 const eventosData = [
-  { titulo: "Celebraciones de domingo", fecha: "Cada domingo", hora: "6:30 a. m. · 8:15 a. m. · 10:00 a. m. · 12:00 p. m.", estado: "próximo", link_registro: "primera-vez.html", imagen_fondo: "Media/01.jpg" },
-  { titulo: "Reunión de jóvenes JNI", fecha: "Cada sábado", hora: "5:30 p. m.", estado: "próximo", link_registro: "ministerios.html", imagen_fondo: "Media/03.jpg" },
-  { titulo: "Ayuno", fecha: "Cada miércoles", hora: "5:00 a. m.", estado: "próximo", link_registro: "contacto.html", imagen_fondo: "Media/04.jpg" },
-  { titulo: "Noche de adoración", fecha: "Fecha por confirmar", hora: "Por confirmar", estado: "agotado", link_registro: "eventos.html", imagen_fondo: "Media/04.jpg" },
-  { titulo: "Servicio especial", fecha: "Fecha anterior", hora: "Consulta novedades", estado: "finalizado", link_registro: "contacto.html", imagen_fondo: "Media/05.jpg" },
-  { titulo: "Grupos de conexión", fecha: "Entre semana", hora: "Varias zonas de Cali", estado: "próximo", link_registro: "grupos.html", imagen_fondo: "Media/06.jpg" },
+  { id: "1", titulo: "Celebraciones de domingo", fecha: "2026-09-20", hora: "08:15:00", ubicacion: "Sede Principal Cali", estado: "proximo", link_registro: "visitanos.html", imagen_fondo: "Media/01.jpg" },
+  { id: "2", titulo: "Reunión de jóvenes JNI", fecha: "2026-09-26", hora: "17:30:00", ubicacion: "Auditorio Juvenil", estado: "proximo", link_registro: "ministerios.html", imagen_fondo: "Media/03.jpg" },
+  { id: "3", titulo: "Grupos de conexión", fecha: "2026-09-22", hora: "19:00:00", ubicacion: "Varios sectores de Cali", estado: "proximo", link_registro: "grupos.html", imagen_fondo: "Media/06.jpg" }
 ];
 
-const eventStatusLabels = { próximo: "Próximo", agotado: "Cupos agotados", finalizado: "Finalizado", cancelado: "Cancelado" };
-const renderEventCard = (eventData, compact = false) => {
-  const card = document.createElement("a");
-  card.className = "event";
-  card.href = eventData.link_registro;
-  card.dataset.status = eventData.estado;
-  card.dataset.statusLabel = eventStatusLabels[eventData.estado] || eventData.estado;
-  card.style.backgroundImage = `url("${eventData.imagen_fondo}")`;
-  card.innerHTML = `<div class="event-overlay"><time class="event-meta">${eventData.fecha} · ${eventData.hora}</time><h3>${eventData.titulo}</h3><span class="event-more">${compact ? "Ver más" : "Conocer más"} <b>↗</b></span></div>`;
-  return card;
+const eventStatusLabels = { proximo: "Próximo", "próximo": "Próximo", agotado: "Cupos agotados", finalizado: "Finalizado", cancelado: "Cancelado" };
+
+const formatPublicDate = (value) => {
+  if (!value) return "Por confirmar";
+  try {
+    return new Intl.DateTimeFormat("es-CO", {
+      weekday: "short",
+      day: "numeric",
+      month: "short",
+      year: "numeric"
+    }).format(new Date(`${value}T12:00:00`));
+  } catch {
+    return value;
+  }
 };
 
-const renderEventFeeds = (events) => {
-  document.querySelectorAll("[data-event-feed]").forEach((eventFeed) => {
-    eventFeed.classList.remove("event-calendar");
-    eventFeed.classList.add("event-list");
-    eventFeed.innerHTML = "";
-    events.slice(0, 6).forEach((eventData) => {
-      eventFeed.appendChild(renderEventCard(eventData, eventFeed.dataset.eventFeed === "home"));
-    });
-  });
+const formatPublicTime = (time) => {
+  if (!time) return "";
+  const parts = String(time).split(":");
+  if (!parts[0]) return time;
+  const hour = parseInt(parts[0], 10);
+  const ampm = hour >= 12 ? "p. m." : "a. m.";
+  const formattedHour = hour % 12 || 12;
+  return `${formattedHour}:${parts[1] || "00"} ${ampm}`;
+};
+
+const renderElevationEvents = (events) => {
+  const featuredSlot = document.querySelector("[data-featured-event-slot]");
+  const gridContainer = document.querySelector(".events-elevation-grid");
+
+  if (!gridContainer && !featuredSlot) return;
+
+  const featuredEvent = events.find((e) => e.es_destacado) || events[0];
+  const otherEvents = events.filter((e) => e.id !== featuredEvent?.id);
+
+  if (featuredSlot && featuredEvent) {
+    featuredSlot.innerHTML = `
+      <div class="event-hero-banner" style="background-image: url('${featuredEvent.imagen_fondo || 'Media/01.jpg'}')">
+        <div class="event-hero-content">
+          <div class="event-hero-info">
+            <span class="event-hero-tag">★ Evento Destacado</span>
+            <h2>${featuredEvent.titulo}</h2>
+            ${featuredEvent.descripcion ? `<p>${featuredEvent.descripcion}</p>` : ""}
+            <div class="event-hero-meta">
+              <span><i class="fa-regular fa-calendar"></i> ${formatPublicDate(featuredEvent.fecha)}</span>
+              <span><i class="fa-regular fa-clock"></i> ${formatPublicTime(featuredEvent.hora)}</span>
+              <span><i class="fa-solid fa-location-dot"></i> ${featuredEvent.ubicacion || "Sede Cali"}</span>
+              ${featuredEvent.requisitos ? `<span><i class="fa-solid fa-circle-info"></i> ${featuredEvent.requisitos}</span>` : ""}
+            </div>
+          </div>
+          <div class="event-hero-actions">
+            <a class="button button-light" href="${featuredEvent.link_registro || 'contacto.html'}">
+              ${featuredEvent.link_registro ? 'Registrarme' : 'Más información'} <span>↗</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  if (gridContainer) {
+    const listToRender = otherEvents.length ? otherEvents : events;
+    gridContainer.innerHTML = listToRender
+      .map(
+        (event) => `
+      <a class="event-elevation-card" href="${event.link_registro || 'contacto.html'}">
+        <div class="event-elevation-thumb">
+          <img src="${event.imagen_fondo || 'Media/02.jpg'}" alt="${event.titulo}" loading="lazy" />
+          <span class="event-elevation-status ${event.estado || 'proximo'}">${eventStatusLabels[event.estado] || event.estado || 'Próximo'}</span>
+        </div>
+        <div class="event-elevation-body">
+          <h3>${event.titulo}</h3>
+          <p class="event-elevation-location">${event.ubicacion || 'Sede Principal Cali'}</p>
+          <div class="event-elevation-details">
+            <span><i class="fa-regular fa-calendar"></i> ${formatPublicDate(event.fecha)}</span>
+            <span><i class="fa-regular fa-clock"></i> ${formatPublicTime(event.hora)}</span>
+            ${event.requisitos ? `<span><i class="fa-solid fa-circle-check"></i> ${event.requisitos}</span>` : ""}
+          </div>
+        </div>
+      </a>`
+      )
+      .join("");
+  }
 };
 
 const loadPublicEvents = async () => {
-  if (!window._supabase) {
-    renderEventFeeds(eventosData);
-    return;
+  const isEventsPage = document.querySelector(".events-elevation-grid") || document.querySelector("[data-featured-event-slot]");
+  const sb = getSupabaseClient();
+
+  if (sb) {
+    try {
+      const { data, error } = await sb.from("eventos").select("*").order("fecha", { ascending: true });
+      if (!error && data && data.length) {
+        if (isEventsPage) renderElevationEvents(data);
+        return;
+      }
+    } catch (e) {
+      console.warn("Aviso eventos:", e);
+    }
   }
-  const { data, error } = await window._supabase
-    .from("eventos")
-    .select("*")
-    .limit(6);
-  renderEventFeeds(error ? eventosData : data || []);
+
+  if (isEventsPage) renderElevationEvents(eventosData);
 };
 
 loadPublicEvents();
 
-if (window._supabase && document.querySelector("[data-event-feed]")) {
-  window._supabase
-    .channel("public-eventos-feed")
-    .on(
-      "postgres_changes",
-      { event: "*", schema: "public", table: "eventos" },
-      loadPublicEvents,
-    )
-    .subscribe();
+/* ========================================================================
+  6. DEVOCIONALES Y FECHAS
+  ======================================================================== */
+const devotionalDate = document.querySelector("#devotional-date");
+
+if (devotionalDate) {
+  devotionalDate.textContent = new Intl.DateTimeFormat("es-CO", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  }).format(new Date());
 }
 
+const loadPublishedDevotional = async () => {
+  const devotionalSection = document.querySelector("[data-public-devotional]");
+  const sb = getSupabaseClient();
+  if (!devotionalSection || !sb) return;
+
+  try {
+    const { data } = await sb
+      .from("devocionales")
+      .select("titulo, resumen, contenido, imagen_url, publicar_at")
+      .eq("publicado", true)
+      .lte("publicar_at", new Date().toISOString())
+      .order("publicar_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (!data) return;
+    const title = document.querySelector("#today-title");
+    const copy = document.querySelector("#devotional-copy");
+    if (title) title.textContent = data.titulo;
+    if (copy) copy.textContent = data.resumen || data.contenido;
+  } catch (err) {
+    console.warn("Aviso devocional:", err);
+  }
+};
+
+loadPublishedDevotional();
+
+/* ========================================================================
+  7. REVELADO PROGRESIVO DE ELEMENTOS (.reveal)
+  ======================================================================== */
+const observer = new IntersectionObserver(
+  (entries) =>
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add("is-visible");
+        observer.unobserve(entry.target);
+      }
+    }),
+  { threshold: 0.08 },
+);
+
+document.querySelectorAll(".reveal").forEach((element) => observer.observe(element));
+
+const heroTextEl = document.querySelector(".hero-video-copy");
+if (heroTextEl) {
+  heroTextEl.style.opacity = "1";
+  heroTextEl.style.visibility = "visible";
+}
+
+/* ========================================================================
+  8. MINISTERIOS, DONACIONES, BANCOS, COPIA Y ORACION
+  ======================================================================== */
 const ministryData = [
   { title: "Niños", audience: "Niños", promise: "Un lugar seguro, alegre y preparado para conocer a Jesús y hacer amigos.", link: "contacto.html" },
   { title: "Jóvenes JNI", audience: "Jóvenes", promise: "Conversaciones honestas, comunidad y fe en movimiento.", link: "eventos.html" },
   { title: "Familias", audience: "Familias", promise: "Acompañamiento para crecer en la fe y construir comunidad en casa.", link: "contacto.html" },
   { title: "Servicio", audience: "Familias", promise: "Usa tus dones para cuidar personas y servir a nuestra ciudad.", link: "contacto.html" },
 ];
+
 const ministryList = document.querySelector("[data-ministry-list]");
 const renderMinistries = (audience = "Todos") => {
   if (!ministryList) return;
   ministryList.innerHTML = "";
-  ministryData.filter((ministry) => audience === "Todos" || ministry.audience === audience).forEach((ministry, index) => {
-    const article = document.createElement("article");
-    article.dataset.audience = ministry.audience;
-    article.innerHTML = `<b>${String(index + 1).padStart(2, "0")}</b><h2>${ministry.title}</h2><p>${ministry.promise}</p><a class="text-link" href="${ministry.link}">Quiero conocer más <span>↗</span></a>`;
-    ministryList.appendChild(article);
-  });
+  ministryData
+    .filter((ministry) => audience === "Todos" || ministry.audience === audience)
+    .forEach((ministry, index) => {
+      const article = document.createElement("article");
+      article.dataset.audience = ministry.audience;
+      article.innerHTML = `<b>${String(index + 1).padStart(2, "0")}</b><h2>${ministry.title}</h2><p>${ministry.promise}</p><a class="text-link" href="${ministry.link}">Quiero conocer más <span>↗</span></a>`;
+      ministryList.appendChild(article);
+    });
 };
 renderMinistries();
+
 document.querySelectorAll("[data-ministry-filter]").forEach((filterButton) => {
   filterButton.addEventListener("click", () => {
     document.querySelectorAll("[data-ministry-filter]").forEach((button) => button.classList.toggle("is-active", button === filterButton));
@@ -429,227 +692,220 @@ if (prayerForm) {
     const status = prayerForm.querySelector("[data-form-status]");
     if (!prayerForm.checkValidity()) {
       prayerForm.reportValidity();
-      status.textContent = "Revisa los campos antes de enviar.";
+      if (status) status.textContent = "Revisa los campos antes de enviar.";
       return;
     }
-    status.textContent = "Gracias. Recibimos tu pedido de oración.";
+    if (status) status.textContent = "Gracias. Recibimos tu pedido de oración.";
     prayerForm.reset();
   });
 }
-// Actualiza la fecha visible del devocional local.
-const devotionalDate = document.querySelector("#devotional-date");
-
-if (devotionalDate) {
-  devotionalDate.textContent = new Intl.DateTimeFormat("es-CO", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  }).format(new Date());
-}
-
-const loadPublishedDevotional = async () => {
-  const devotionalSection = document.querySelector("[data-public-devotional]");
-  if (!devotionalSection || !window._supabase) return;
-  const { data } = await window._supabase
-    .from("devocionales")
-    .select("titulo, resumen, contenido, imagen_url, publicar_at")
-    .eq("publicado", true)
-    .lte("publicar_at", new Date().toISOString())
-    .order("publicar_at", { ascending: false })
-    .limit(1)
-    .maybeSingle();
-  if (!data) return;
-  const title = document.querySelector("#today-title");
-  const copy = document.querySelector("#devotional-copy");
-  const link = document.querySelector("#devotional-link");
-  if (title) title.textContent = data.titulo;
-  if (copy) copy.textContent = data.resumen || data.contenido;
-  if (devotionalDate) devotionalDate.textContent = new Intl.DateTimeFormat("es-CO", { day: "numeric", month: "long", year: "numeric" }).format(new Date(data.publicar_at));
-  if (link) { link.textContent = "Leer devocional completo ↗"; link.href = "#today-title"; }
-  if (data.imagen_url) devotionalSection.style.setProperty("--devotional-image", `url("${data.imagen_url}")`);
-};
-
-loadPublishedDevotional();
 
 /* ========================================================================
-  6. FALLBACK PARA VIDEOS ABIERTOS COMO ARCHIVO LOCAL
-  ======================================================================== */
-// YouTube bloquea los iframes sin Referer cuando la pagina se abre como archivo local.
-// En esa vista se muestra una miniatura funcional con acceso directo al video.
-if (window.location.protocol === "file:") {
-  const localSermonFrame = document.querySelector("#sermon-panel iframe");
-  if (localSermonFrame) {
-    const localSermonLink = document.createElement("a");
-    localSermonLink.className = "local-video-fallback";
-    localSermonLink.href = "https://youtu.be/kZNdlw4Z4Nw?si=HF3feUEWbyTApKJW";
-    localSermonLink.target = "_blank";
-    localSermonLink.rel = "noreferrer";
-    localSermonLink.innerHTML = `<img src="https://img.youtube.com/vi/kZNdlw4Z4Nw/hqdefault.jpg" alt="Vista previa de la prédica en YouTube"><span>Ver prédica en YouTube <b>↗</b></span>`;
-    localSermonFrame.replaceWith(localSermonLink);
-  }
-}
-
-document.querySelectorAll("[data-media-target]").forEach((link) => {
-  link.addEventListener("click", () => {
-    const targetTab = document.querySelector(
-      `[data-media-tab="${link.dataset.mediaTarget}"]`,
-    );
-    if (targetTab) targetTab.click();
-  });
-});
-
-/* ========================================================================
-  7. CONFIGURACION OPCIONAL DE TRANSMISION EN VIVO
-  ======================================================================== */
-// Reemplaza este valor por el ID de YouTube de la emision activa cuando haya un en vivo.
-const liveVideoId = "";
-const livePlayer = document.querySelector("[data-live-player] iframe");
-const liveLabel = document.querySelector("[data-live-label]");
-
-if (liveVideoId && livePlayer && liveLabel) {
-  livePlayer.src = `https://www.youtube-nocookie.com/embed/${liveVideoId}?rel=0`;
-  liveLabel.textContent = "En vivo ahora";
-}
-
-/* ========================================================================
-  8. REVELADO PROGRESIVO DE ELEMENTOS
-  ======================================================================== */
-const observer = new IntersectionObserver(
-  (entries) =>
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add("is-visible");
-        observer.unobserve(entry.target);
-      }
-    }),
-  { threshold: 0.12 },
-);
-
-document
-  .querySelectorAll(".reveal")
-  .forEach((element) => observer.observe(element));
-
-/* ========================================================================
-  9. DATOS DE GRUPOS DE CONEXION
-  ======================================================================== */
-// Reemplaza los ejemplos por informacion aprobada por cada lider.
-// Por seguridad, la coordenada debe ser aproximada y la direccion detallada se comparte al contacto.
-const connectionGroups = [
-  {
-    name: "Grupo San Fernando",
-    zone: "San Fernando",
-    day: "Martes · 7:00 p. m.",
-    leader: "Líder por confirmar",
-    network: "Red de 12 por confirmar",
-    address: "Dirección por confirmar con el líder",
-    contact: "contacto.html",
-    lat: 3.4341,
-    lng: -76.5455,
-  },
-  {
-    name: "Grupo Valle del Lili",
-    zone: "Valle del Lili",
-    day: "Miércoles · 7:00 p. m.",
-    leader: "Líder por confirmar",
-    network: "Red de 12 por confirmar",
-    address: "Dirección por confirmar con el líder",
-    contact: "contacto.html",
-    lat: 3.3678,
-    lng: -76.5346,
-  },
-  {
-    name: "Grupo La Flora",
-    zone: "La Flora",
-    day: "Jueves · 7:00 p. m.",
-    leader: "Líder por confirmar",
-    network: "Red de 12 por confirmar",
-    address: "Dirección por confirmar con el líder",
-    contact: "contacto.html",
-    lat: 3.4809,
-    lng: -76.5152,
-  },
-];
-
-/* ========================================================================
-  10. BUSCADOR, LISTADO Y MAPA INTERACTIVO
+  9. GRUPOS DE CONEXION Y MAPA (RECARGA INTELIGENTE SIN CUADROS ROTOS)
   ======================================================================== */
 const mapElement = document.querySelector("#groups-map");
 const groupsResults = document.querySelector("[data-groups-results]");
 const groupCount = document.querySelector("[data-group-count]");
 const groupSearch = document.querySelector("#group-search");
 
-if (mapElement && window.L) {
-  // Inicializacion del mapa y sus marcadores.
-  const groupsMap = L.map("groups-map", { scrollWheelZoom: false }).setView(
-    [3.425, -76.535],
-    12,
-  );
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    attribution: "&copy; OpenStreetMap contributors",
+let groupsMapInstance = null;
+
+const getZoneCoordinates = (zona = "", index = 0) => {
+  const z = String(zona).toLowerCase();
+  if (z.includes("sur") || z.includes("lili")) return [3.3720 + (index * 0.003), -76.5310];
+  if (z.includes("norte") || z.includes("flora")) return [3.4750 + (index * 0.003), -76.5260];
+  if (z.includes("oeste") || z.includes("peñon")) return [3.4480 + (index * 0.003), -76.5420];
+  if (z.includes("oriente") || z.includes("aguablanca")) return [3.4210 + (index * 0.003), -76.4980];
+  return [3.4341 + ((index % 2 === 0 ? 1 : -1) * 0.005 * index), -76.5455 + ((index % 2 === 0 ? -1 : 1) * 0.004 * index)];
+};
+
+const initGroupsApp = async () => {
+  if (!mapElement || !window.L) return;
+
+  if (groupsMapInstance) {
+    groupsMapInstance.remove();
+    groupsMapInstance = null;
+  }
+
+  // 1. Crear mapa de Leaflet
+  const groupsMap = L.map("groups-map", {
+    scrollWheelZoom: false,
+    zoomControl: true,
+    fadeAnimation: true
+  }).setView([3.435, -76.535], 12);
+
+  groupsMapInstance = groupsMap;
+
+  // 2. OpenStreetMap oficial (100% libre y sin claves API)
+  L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    maxZoom: 19,
+    tileSize: 256
   }).addTo(groupsMap);
-  const markers = new Map();
+
+  // Forzar a Leaflet a calcular el tamaño real de todos sus cuadros
+  const fullMapRefresh = () => {
+    if (groupsMap) {
+      groupsMap.invalidateSize(true);
+    }
+  };
+
+  // Reintentos automáticos
+  setTimeout(fullMapRefresh, 100);
+  setTimeout(fullMapRefresh, 500);
+  setTimeout(fullMapRefresh, 1000);
+  window.addEventListener("resize", fullMapRefresh);
+
+  // Observador ANTICIPADO para index.html: precarga los cuadros 300px antes de llegar con el scroll
+  const sectionObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          fullMapRefresh();
+        }
+      });
+    },
+    { rootMargin: "300px 0px 300px 0px", threshold: 0.01 }
+  );
+
+  const parentSection = document.querySelector("#grupos") || mapElement;
+  sectionObserver.observe(parentSection);
+
+  // También recalcular con el scroll de la ventana
+  window.addEventListener("scroll", () => {
+    const bounds = mapElement.getBoundingClientRect();
+    if (bounds.top < window.innerHeight && bounds.bottom > 0) {
+      fullMapRefresh();
+    }
+  }, { passive: true });
+
+  // 3. Cargar grupos de Supabase (sin direcciones exactas por seguridad)
+  let activeGroups = [];
+  const sb = getSupabaseClient();
+
+  if (sb) {
+    try {
+      const { data, error } = await sb
+        .from("grupos_conexion")
+        .select("*")
+        .eq("estado", "activo")
+        .order("created_at", { ascending: false });
+
+      if (!error && data) {
+        activeGroups = data.map((g) => {
+          const nameFinal = g.nombre || g.nombre_grupo || "Grupo de conexión";
+          return {
+            id: g.id,
+            name: nameFinal,
+            zone: g.zona || "Cali",
+            day: [g.dia, g.hora ? formatPublicTime(g.hora) : ""].filter(Boolean).join(" · ") || "Por confirmar",
+            leader: g.lider || "Líder de grupo",
+            contact: g.contacto?.startsWith("http") ? g.contacto : (g.contacto ? `https://wa.me/${g.contacto.replace(/\D/g, '')}` : "contacto.html"),
+            lat: Number(g.lat) || 3.435,
+            lng: Number(g.lng) || -76.535
+          };
+        });
+      }
+    } catch (err) {
+      console.error("Error cargando grupos de Supabase:", err);
+    }
+  }
+
+  // 4. Marcadores en el mapa
   const markerIcon = L.divIcon({
-    className: "group-pin",
-    html: "<span>⌂</span>",
-    iconSize: [42, 42],
-    iconAnchor: [21, 38],
-    popupAnchor: [0, -39],
+    className: "custom-map-marker",
+    html: `<div class="marker-pin"><i class="fa-solid fa-church"></i></div>`,
+    iconSize: [34, 42],
+    iconAnchor: [17, 42],
+    popupAnchor: [0, -38],
   });
 
-  // Plantilla de informacion mostrada al seleccionar un grupo.
-  const popup = (group) =>
-    `<article class="group-popup"><strong>${group.name}</strong><p><b>Zona</b><br>${group.zone}</p><p><b>Horario</b><br>${group.day}</p><p><b>Líder del grupo</b><br>${group.leader}</p><p><b>Red de 12</b><br>${group.network}</p><p><b>Dirección</b><br>${group.address}</p><a href="${group.contact}">Solicitar información ↗</a></article>`;
-  connectionGroups.forEach((group) => {
+  const markers = new Map();
+
+  activeGroups.forEach((group) => {
+    const popupContent = `
+      <article class="group-popup">
+        <strong>${group.name}</strong>
+        <p><b>Zona:</b> ${group.zone}</p>
+        <p><b>Horario:</b> ${group.day}</p>
+        <p><b>Líder:</b> ${group.leader}</p>
+        <a href="${group.contact}" target="_blank" rel="noreferrer">Solicitar dirección al líder ↗</a>
+      </article>
+    `;
     const marker = L.marker([group.lat, group.lng], { icon: markerIcon })
       .addTo(groupsMap)
-      .bindPopup(popup(group));
+      .bindPopup(popupContent);
     markers.set(group.name, marker);
   });
 
-  // Sincroniza la seleccion de la lista con la vista del mapa.
   const focusGroup = (group) => {
+    if (!group) return;
     const marker = markers.get(group.name);
     groupsMap.flyTo([group.lat, group.lng], 15, { duration: 0.65 });
-    marker.openPopup();
+    if (marker) marker.openPopup();
     document
       .querySelectorAll(".group-result")
-      .forEach((item) =>
-        item.classList.toggle("is-active", item.dataset.group === group.name),
-      );
+      .forEach((item) => item.classList.toggle("is-active", item.dataset.group === group.name));
   };
 
-  // Filtra y renderiza los grupos disponibles.
+  // 5. Lista lateral y buscador
   const renderGroups = (query = "") => {
-    const normalized = query.trim().toLocaleLowerCase("es");
-    const filtered = connectionGroups.filter((group) =>
-      `${group.name} ${group.zone} ${group.day} ${group.leader}`
-        .toLocaleLowerCase("es")
-        .includes(normalized),
+    if (!groupsResults) return;
+    const normalized = query.trim().toLowerCase();
+    const filtered = activeGroups.filter((group) =>
+      `${group.name} ${group.zone} ${group.day} ${group.leader}`.toLowerCase().includes(normalized)
     );
-    groupCount.textContent = `${filtered.length} grupo${filtered.length === 1 ? "" : "s"} encontrado${filtered.length === 1 ? "" : "s"}`;
-    groupsResults.innerHTML =
-      filtered
-        .map(
-          (group) =>
-            `<button class="group-result" type="button" data-group="${group.name}"><strong>${group.name}</strong><span>${group.zone} · ${group.day}</span><small>Ver en el mapa ↗</small></button>`,
-        )
-        .join("") ||
-      '<p class="groups-empty">No encontramos grupos con esa búsqueda.</p>';
-    groupsResults
-      .querySelectorAll(".group-result")
-      .forEach((button) =>
-        button.addEventListener("click", () =>
-          focusGroup(
-            connectionGroups.find(
-              (group) => group.name === button.dataset.group,
-            ),
-          ),
-        ),
-      );
+
+    if (groupCount) {
+      groupCount.textContent = `${filtered.length} grupo${filtered.length === 1 ? "" : "s"} encontrado${filtered.length === 1 ? "" : "s"}`;
+    }
+
+    if (!filtered.length) {
+      groupsResults.innerHTML = '<p style="padding: 24px 20px; color: #a8a5ad; font-size: 13px;">No hay grupos de conexión registrados actualmente.</p>';
+      return;
+    }
+
+    groupsResults.innerHTML = filtered
+      .map(
+        (group) => `
+        <button class="group-result" type="button" data-group="${group.name}">
+          <strong>${group.name}</strong>
+          <span>${group.zone} · ${group.day}</span>
+          <small>Ver en el mapa ↗</small>
+        </button>`
+      )
+      .join("");
+
+    groupsResults.querySelectorAll(".group-result").forEach((button) =>
+      button.addEventListener("click", () =>
+        focusGroup(activeGroups.find((group) => group.name === button.dataset.group))
+      )
+    );
   };
 
   renderGroups();
-  groupSearch.addEventListener("input", (event) =>
-    renderGroups(event.target.value),
-  );
+
+  if (groupSearch) {
+    groupSearch.addEventListener("input", (event) => renderGroups(event.target.value));
+  }
+};
+
+initGroupsApp();
+
+/* ========================================================================
+  11. FORMULARIO DE BOLETÍN EN EL FOOTER
+  ======================================================================== */
+const footerNewsletterForm = document.querySelector("[data-footer-newsletter]");
+if (footerNewsletterForm) {
+  footerNewsletterForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const statusEl = footerNewsletterForm.querySelector("[data-newsletter-status]");
+    if (statusEl) {
+      statusEl.textContent = "¡Gracias por suscribirte! Te mantendremos informado.";
+      footerNewsletterForm.reset();
+      setTimeout(() => {
+        statusEl.textContent = "";
+      }, 6000);
+    }
+  });
 }

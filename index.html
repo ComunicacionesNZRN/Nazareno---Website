@@ -48,7 +48,8 @@
         ],
         "sameAs": [
           "https://www.instagram.com/nazarenocali/",
-          "https://www.youtube.com/user/nazarenocali"
+          "https://www.youtube.com/user/nazarenocali",
+          "https://www.facebook.com/nazarenocali"
         ]
       }
     </script>
@@ -57,6 +58,7 @@
     <link
       href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=Cormorant+Garamond:ital,wght@0,500;1,500;1,600&family=Sora:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"/>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
@@ -100,8 +102,8 @@
       <a href="index.html">Inicio <small>01</small></a
       ><a href="visitanos.html">Visítanos <small>02</small></a
       ><a href="primera-vez.html">Primera vez <small>03</small></a
-      ><a href="ministerios.html">Ministerios <small>04</small></a
-      ><a href="grupos.html">Grupos <small>04</small></a
+      ><a href="ministerios.html">Servir <small>04</small></a
+      ><a href="grupos.html">Grupos <small>05</small></a
       ><a href="eventos.html">Eventos <small>06</small></a
       ><a href="donar.html">Donar <small>07</small></a
       ><a href="mensajes.html">En vivo y prédicas <small>08</small></a
@@ -119,6 +121,7 @@
       </div>
     </div>
     <main>
+      <!-- Hero Principal -->
       <section class="hero" id="inicio">
         <video class="hero-video" autoplay muted loop playsinline poster="Media/01.jpg">
           <source src="Media/video-institucional.mp4" type="video/mp4" />
@@ -136,6 +139,8 @@
         <div class="hero-video-meta"><span>01</span><i></i><span>VIDEO INSTITUCIONAL</span></div>
         <a class="hero-scroll" href="#conecta" aria-label="Bajar a la siguiente sección">Desliza <span>↓</span></a>
       </section>
+
+      <!-- Carrusel Descubre más maneras -->
       <section class="discover-connect" id="conecta" aria-labelledby="discover-connect-title">
         <div class="discover-connect-intro">
           <p class="eyebrow">Tu lugar en Nazareno</p>
@@ -160,6 +165,8 @@
           <button type="button" class="discover-connect-arrow" data-connect-next aria-label="Contenido siguiente">→</button>
         </div>
       </section>
+
+      <!-- Misión Ticker -->
       <div
         class="mission-ticker"
         aria-label="Misión de la Iglesia del Nazareno Cali"
@@ -167,13 +174,13 @@
         <div>
           <span>JESÚS AL CENTRO</span><b>✳</b><span>PERSONAS CON PROPÓSITO</span
           ><b>✳</b><span>FE EN ACCIÓN</span><b>✳</b
-          ><span>COMUNIDAD QUE TRANSFORMA</span><b>✳</b
-          ><span>PROPÓSITO PARA TODOS</span><b>✳</b><span>JESÚS AL CENTRO</span
-          ><b>✳</b><span>PERSONAS CON PROPÓSITO</span><b>✳</b
-          ><span>FE EN ACCIÓN</span><b>✳</b><span>COMUNIDAD QUE TRANSFORMA</span
+          ><span>COMUNIDAD QUE TRANSFORMA</span><b>✳</b><span>PROPÓSITO PARA TODOS</span><b>✳</b><span>JESÚS AL CENTRO</span
+          ><b>✳</b><span>PERSONAS CON PROPÓSITO</span><b>✳</b><span>FE EN ACCIÓN</span><b>✳</b><span>COMUNIDAD QUE TRANSFORMA</span
           ><b>✳</b><span>PROPÓSITO PARA TODOS</span><b>✳</b>
         </div>
       </div>
+
+      <!-- Manifiesto -->
       <section class="manifesto" id="somos">
         <div class="section-label">
           <span>02</span><span>Lo que nos mueve</span>
@@ -196,6 +203,8 @@
           PROPÓSITO · SERVICIO ·
         </div>
       </section>
+
+      <!-- Comunidad -->
       <section class="community" id="comunidad">
         <div class="section-label light">
           <span>03</span><span>Encuentra tu lugar</span>
@@ -219,13 +228,15 @@
             /><span class="card-number">02</span
             ><span class="card-title">Conecta<br />en un grupo</span
             ><span class="card-arrow">↗</span></a
-          ><a class="community-card card-outline" href="eventos.html"
+          ><a class="community-card card-outline" href="ministerios.html"
             ><span class="card-number">03</span
             ><span class="card-title">Sirve<br />con propósito</span
             ><span class="card-arrow">↗</span></a
           >
         </div>
       </section>
+
+      <!-- Grupos en Portada (Tema Blanco) -->
       <section class="groups" id="grupos" aria-labelledby="groups-title">
         <div class="groups-intro">
           <div>
@@ -261,78 +272,61 @@
           </div>
         </div>
       </section>
-      <section class="visit" id="visitanos">
-        <div class="visit-image">
-          <img
-            src="Media/02.jpg"
-            alt="Pastor compartiendo un mensaje en la Iglesia del Nazareno Cali"
-          />
-        </div>
-        <div class="visit-content reveal">
-          <p class="eyebrow">Tu primer domingo</p>
-          <h2>Ven tal<br />como <em>eres.</em></h2>
-          <p>
-            Te esperamos con una celebración cercana, música, un mensaje que
-            aterriza a la vida real y café para conversar.
-          </p>
-          <div class="service-time" aria-label="Horarios de reuniones">
-            <div class="service-row"><strong>Miércoles</strong><span>5:00 a. m. · Ayuno</span></div>
-            <div class="service-row"><strong>Sábado</strong><span>5:30 p. m. · Reunión de jóvenes JNI</span></div>
-            <div class="service-row"><strong>Domingo</strong><span>6:30 a. m. · 8:15 a. m. · 10:00 a. m. · 12:00 p. m.</span></div>
-            <small>Calle 13 # 75-109 · Quintas de Don Simón, Cali</small>
+
+      <!-- CONTENEDOR: BIENVENIDOS A TU CASA (ESTILO AMOR EN ACCIÓN) -->
+      <section class="welcome-home-section" id="bienvenidos" aria-labelledby="welcome-title">
+        <div class="welcome-home-container reveal">
+          <div class="welcome-home-image">
+            <img src="Media/02.jpg" alt="Bienvenidos a Iglesia del Nazareno Cali" />
+            <div class="welcome-home-badge">
+              <span>★ ERES BIENVENIDO</span>
+            </div>
           </div>
-          <a
-            class="button button-dark"
-            href="https://maps.google.com/?q=Calle+13+75-109+Cali"
-            target="_blank"
-            rel="noreferrer"
-            >Cómo llegar <span>↗</span></a
-          >
+          <div class="welcome-home-content">
+            <p class="eyebrow">Nuestra casa es tu casa</p>
+            <h2 id="welcome-title">Bienvenidos a<br /><em>tu casa.</em></h2>
+            <p class="welcome-home-lead">
+              Creemos que la iglesia no es un edificio, sino una familia. No importa de dónde vengas, tu historia o en qué punto de tu camino te encuentres: aquí siempre serás recibido con los brazos abiertos.
+            </p>
+            
+            <div class="welcome-service-times">
+              <div class="service-time-badge">
+                <strong>Domingos</strong>
+                <span>6:30 a. m. · 8:15 a. m. · 10:00 a. m. · 12:00 p. m.</span>
+              </div>
+              <div class="service-time-badge">
+                <strong>Entre semana</strong>
+                <span>Miércoles 5:00 a. m. (Ayuno) · Sábados 5:30 p. m. (JNI)</span>
+              </div>
+              <p class="welcome-location-text">
+                <i class="fa-solid fa-location-dot"></i> Calle 13 # 75-109 · Quintas de Don Simón, Cali, Colombia
+              </p>
+            </div>
+
+            <div class="welcome-home-actions">
+              <a class="button button-dark" href="visitanos.html">Planifica tu visita <span>↗</span></a>
+              <a class="button button-light" href="https://maps.google.com/?q=Calle+13+75-109+Cali" target="_blank" rel="noreferrer">Cómo llegar <span>↗</span></a>
+            </div>
+          </div>
         </div>
       </section>
+
+      <!-- Preguntas Frecuentes Home -->
       <section class="inner-band home-faq" aria-labelledby="home-faq-title">
         <p class="eyebrow">Para tu primera visita</p>
         <h2 id="home-faq-title">¿Tienes preguntas?</h2>
         <div class="feature-list">
-          <article><b>01</b><h3>¿Qué debo llevar?</h3><p>Solo ven como eres. No necesitas inscripción ni conocer previamente la iglesia.</p></article>
-          <article><b>02</b><h3>¿Puedo ir con niños?</h3><p>Tenemos espacios y acompañamiento pensado para niños y familias durante la celebración.</p></article>
-          <article><b>03</b><h3>¿Dónde nos reunimos?</h3><p>Estamos en Calle 13 # 75-109, Quintas de Don Simón, Cali.</p></article>
+          <article><b>01</b><h3>¿Qué debo llevar?</h3><p>Solo ven como eres. No necesitas inscripción previa para nuestras celebraciones de domingo.</p></article>
+          <article><b>02</b><h3>¿Puedo ir con niños?</h3><p>Tenemos espacios seguros y divertidos pensados especialmente para niños en Nazareno Kids.</p></article>
+          <article><b>03</b><h3>¿Dónde nos reunimos?</h3><p>Estamos ubicados en Calle 13 # 75-109, barrio Quintas de Don Simón, al sur de Cali.</p></article>
         </div>
         <a class="button button-dark" href="primera-vez.html">Resuelve tus dudas <span>↗</span></a>
       </section>
-      <section class="whats-on" id="agenda">
-        <div class="section-label light">
-          <span>04</span><span>Próximamente</span>
-        </div>
-        <div class="agenda-head reveal">
-          <h2>Lo que está<br /><em>pasando.</em></h2>
-          <a
-            class="button button-light" href="eventos.html">Ver agenda completa <span>↗</span></a>
-        </div>
-        <div class="event-list reveal" data-event-feed="home">
-          <a class="event event-sunday" href="visitanos.html">
-            <div class="event-overlay">
-              <h3>Celebraciones de domingo</h3>
-              <span class="event-more">Ver más <b>↗</b></span>
-            </div>
-          </a>
-          <a class="event event-youth" href="ministerios.html">
-            <div class="event-overlay">
-              <h3>Reunión de jóvenes JNI</h3>
-              <span class="event-more">Ver más <b>↗</b></span>
-            </div>
-          </a>
-          <a class="event event-worship" href="mensajes.html">
-            <div class="event-overlay">
-              <h3>Noche de adoración</h3>
-              <span class="event-more">Ver más <b>↗</b></span>
-            </div>
-          </a>
-        </div>
-      </section>
+
+      <!-- Media Hub -->
       <section class="media-hub" id="mensajes" aria-labelledby="mensajes-title">
         <div class="section-label light">
-          <span>05</span><span>Conéctate desde donde estés</span>
+          <span>04</span><span>Conéctate desde donde estés</span>
         </div>
         <div class="media-intro reveal">
           <div>
@@ -342,7 +336,7 @@
             </h2>
           </div>
           <p>
-            Escoge entre ver el fragmento de la predica o la experiencia
+            Escoge entre ver el fragmento de la prédica o la experiencia
             completa de nuestra última transmisión.
           </p>
         </div>
@@ -357,7 +351,7 @@
             role="tab"
             id="sermon-tab"
             aria-selected="true"
-            aria-controls="live-panel"
+            aria-controls="sermon-panel"
             data-media-tab="sermon"
           >
             Mirar prédica</button
@@ -385,15 +379,7 @@
               title="Prédica editada de la Iglesia del Nazareno Cali"
               src="https://www.youtube.com/embed/kZNdlw4Z4Nw?rel=0"
               loading="lazy"
-              allow="
-                accelerometer;
-                autoplay;
-                clipboard-write;
-                encrypted-media;
-                gyroscope;
-                picture-in-picture;
-                web-share;
-              "
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
               allowfullscreen
             ></iframe>
             <div class="player-status">
@@ -428,18 +414,8 @@
               width="560"
               height="315"
               src="https://www.youtube.com/embed/LWOoJB_YuL8?rel=0"
-              frameborder="0"
               loading="lazy"
-              allow="
-                accelerometer;
-                autoplay;
-                clipboard-write;
-                encrypted-media;
-                gyroscope;
-                picture-in-picture;
-                web-share;
-              "
-              referrerpolicy="strict-origin-when-cross-origin"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
               allowfullscreen
             ></iframe>
           </div>
@@ -458,9 +434,11 @@
           </div>
         </div>
       </section>
+
+      <!-- Devocional Preview -->
       <section class="devotional-preview" aria-labelledby="devotional-title">
         <div class="section-label">
-          <span>06</span><span>Para cada día</span>
+          <span>05</span><span>Para cada día</span>
         </div>
         <div class="devotional-preview-grid">
           <div>
@@ -469,8 +447,7 @@
           </div>
           <div class="devotional-preview-copy">
             <p>
-              Encuentra el devocional del día, la guía bíblica del mes y las
-              próximas actividades de nuestra iglesia.
+              Encuentra el devocional del día, reflexiones bíblicas y recursos espirituales para tu caminar diario.
             </p>
             <a class="button button-dark" href="devocional.html"
               >Explorar devocional <span>↗</span></a
@@ -479,43 +456,100 @@
         </div>
       </section>
     </main>
+
+    <!-- ========================================================================
+      FOOTER PROFESIONAL (ESTILO SOUL CHURCH: REDES, LEGAL, CONTACTO Y NEWSLETTER)
+      ======================================================================== -->
     <footer class="site-footer" id="contacto">
-      <div class="footer-top">
-        <a class="brand" href="#inicio"
-          ><img
-            class="brand-logo"
-            src="Media/logoBlanco.png"
-            alt="Iglesia del Nazareno Cali"
-        /></a>
-        <h2>Nos vemos<br /><em>el domingo.</em></h2>
-        <a class="button button-light" href="visitanos.html"
-          >Planifica tu visita <span>↗</span></a
-        >
+      <div class="footer-main-grid">
+        <!-- Columna 1: Brand & Logo Badge -->
+        <div class="footer-col footer-col-brand">
+          <a class="footer-brand-badge" href="#inicio" aria-label="Inicio">
+            <img src="Media/logoBlanco.png" alt="Logo Iglesia del Nazareno Cali" />
+          </a>
+          <p class="footer-brand-tagline">
+            Una iglesia en Cali apasionada por Jesús, comprometida con las personas y transformando nuestra ciudad.
+          </p>
+        </div>
+
+        <!-- Columna 2: Contacto General -->
+        <div class="footer-col">
+          <h4 class="footer-heading">Contacto</h4>
+          <p class="footer-contact-item"><strong>Iglesia del Nazareno Cali</strong></p>
+          <p class="footer-contact-item">Calle 13 # 75-109, Quintas de Don Simón<br />Cali, Valle del Cauca, Colombia</p>
+          <p class="footer-contact-item"><a href="mailto:info@nazarenocali.org">info@nazarenocali.org</a></p>
+          <p class="footer-contact-item"><a href="https://wa.link/62syyk" target="_blank" rel="noreferrer">+57 304 377 8188</a></p>
+        </div>
+
+        <!-- Columna 3: Enlaces Rápidos & Legal -->
+        <div class="footer-col">
+          <h4 class="footer-heading">Enlaces</h4>
+          <ul class="footer-links-list">
+            <li><a href="index.html">Inicio</a></li>
+            <li><a href="visitanos.html">Planifica tu visita</a></li>
+            <li><a href="ministerios.html">Equipos de Servicio</a></li>
+            <li><a href="grupos.html">Grupos de Conexión</a></li>
+            <li><a href="eventos.html">Actividades & Eventos</a></li>
+            <li><a href="donar.html">Dar / Donación</a></li>
+            <li><a href="contacto.html">Políticas de Privacidad & Tratamiento de Datos ↗</a></li>
+          </ul>
+        </div>
+
+        <!-- Columna 4: Medios & Redes Sociales -->
+        <div class="footer-col">
+          <h4 class="footer-heading">Medios & Redes</h4>
+          <ul class="footer-links-list">
+            <li><a href="https://www.youtube.com/user/nazarenocali" target="_blank" rel="noreferrer"><i class="fa-brands fa-youtube"></i> YouTube ↗</a></li>
+            <li><a href="https://www.instagram.com/nazarenocali/" target="_blank" rel="noreferrer"><i class="fa-brands fa-instagram"></i> Instagram ↗</a></li>
+            <li><a href="https://www.facebook.com/nazarenocali" target="_blank" rel="noreferrer"><i class="fa-brands fa-facebook"></i> Facebook ↗</a></li>
+            <li><a href="mensajes.html"><i class="fa-solid fa-podcast"></i> Prédicas en audio & Video</a></li>
+          </ul>
+        </div>
+
+        <!-- Columna 5: Newsletter / Boletín (Stay Tuned) -->
+        <div class="footer-col footer-col-newsletter">
+          <h4 class="footer-heading">Mantente Conectado</h4>
+          <p class="footer-newsletter-desc">
+            Suscríbete a nuestro boletín para recibir noticias, devocionales y actividades de nuestra comunidad.
+          </p>
+          <form class="footer-newsletter-form" data-footer-newsletter>
+            <div class="footer-form-field">
+              <input type="text" name="first_name" placeholder="Nombre" required />
+            </div>
+            <div class="footer-form-field">
+              <input type="text" name="last_name" placeholder="Apellido" required />
+            </div>
+            <div class="footer-form-field">
+              <input type="email" name="email" placeholder="Correo electrónico" required />
+            </div>
+            <label class="footer-form-checkbox">
+              <input type="checkbox" name="privacy_policy" required />
+              <span>Acepto las políticas de privacidad y tratamiento de datos de Nazareno Cali.</span>
+            </label>
+            <button class="footer-submit-btn" type="submit">Suscribirme ↗</button>
+            <p class="footer-form-status" data-newsletter-status></p>
+          </form>
+        </div>
       </div>
-      <div class="footer-bottom">
-        <span>© 2026 Iglesia del Nazareno Cali</span><span>Cali, Colombia</span>
-        <div>
-          <a
-            href="https://www.instagram.com/nazarenocali/"
-            target="_blank"
-            rel="noreferrer"
-            >Instagram</a
-          ><a
-            href="https://www.youtube.com/user/nazarenocali"
-            target="_blank"
-            rel="noreferrer"
-            >YouTube</a
-          ><a href="https://wa.link/62syyk" target="_blank" rel="noreferrer"
-            >WhatsApp</a
-          >
+
+      <!-- Barra Inferior de Servicios y Transmisión -->
+      <div class="footer-bottom-strip">
+        <div class="footer-strip-left">
+          <span class="strip-label">Celebraciones de domingo:</span>
+          <span class="strip-times">6:30 AM · 8:15 AM · 10:00 AM · 12:00 PM</span>
+        </div>
+        <div class="footer-strip-center">
+          <a class="footer-live-link" href="mensajes.html">
+            <span class="live-dot"></span> Ver transmisión online ▷
+          </a>
+        </div>
+        <div class="footer-strip-right">
+          <span>© 2026 Iglesia del Nazareno Cali. Todos los derechos reservados.</span>
         </div>
       </div>
     </footer>
-    <script
-      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-      crossorigin=""
-    ></script>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabase-client.js"></script>
     <script src="js/visitas-tracker.js"></script>
