@@ -13,15 +13,17 @@ if (!document.querySelector('link[href*="font-awesome"]')) {
 }
 
 const primaryNavigation = [
-  ["Inicio", "index.html"],
-  ["Reuniones", "visitanos.html"],
-  ["¿Es tu primera vez?", "primera-vez.html"],
-  ["Ministerios", "ministerios.html"],
-  ["Eventos", "eventos.html"],
-  ["Recursos", "devocional.html"],
-  ["Nosotros", "nosotros.html"],
+  ["Donación", "donar.html"],
+  ["Grupos", "grupos.html"],
+  ["Servir", "ministerios.html"],
+  ["Actividades", "eventos.html"],
+  ["Conócenos", "nosotros.html"],
 ];
 const utilityNavigation = [
+  ["Inicio", "index.html"],
+  ["Visítanos", "visitanos.html"],
+  ["Primera vez", "primera-vez.html"],
+  ["Recursos", "devocional.html"],
   ["Grupos", "grupos.html"],
   ["En vivo y prédicas", "mensajes.html"],
   ["Contacto", "contacto.html"],
@@ -42,28 +44,122 @@ if (header) {
     mainNavigation.innerHTML = navigationMarkup(primaryNavigation);
   }
 }
+
+const connectCarousel = document.querySelector("[data-connect-carousel]");
+const connectDots = document.querySelector("[data-connect-dots]");
+let connectItems = [];
+let connectIndex = 0;
+let connectAnimationTimer;
+
+const CONNECT_GAP = "var(--connect-gap, 24px)";
+const connectTransformFor = (state) =>
+  state === "active" ? "translateX(-50%)" :
+  state === "prev" ? `translateX(calc(-150% - ${CONNECT_GAP}))` :
+  state === "next" ? `translateX(calc(50% + ${CONNECT_GAP}))` :
+  `translateX(calc(50% + ${CONNECT_GAP}))`;
+
+const connectTitleSize = (title = "") => title.length > 42 ? "clamp(30px, 4vw, 58px)" : title.length > 26 ? "clamp(35px, 5vw, 70px)" : "clamp(40px, 6vw, 84px)";
+const applyConnectTitleSize = () => connectCarousel?.querySelectorAll(".discover-card").forEach((slide) => {
+  const title = slide.querySelector(".discover-card-overlay strong, :scope > strong");
+  if (title) slide.style.setProperty("--connect-title-size", connectTitleSize(title.textContent.trim()));
+});
+
+const renderConnectCarousel = (items) => {
+  if (!connectCarousel || !items.length) return;
+  connectItems = items;
+  connectCarousel.innerHTML = items.map((item, index) => `<a class="discover-card ${index === 0 ? "is-active" : ""}" href="${item.link_url || "contacto.html"}" data-connect-slide="${index}"><img src="${item.image_url || "Media/01.jpg"}" alt="${item.image_alt || item.titulo}" /><span class="discover-card-overlay"><small>${item.eyebrow || (item.tipo === "fijo" ? "Actividad fija" : "Actividad del mes")}</small><strong>${item.titulo}</strong><span>${item.descripcion || "Conoce más sobre esta actividad"} ↗</span></span></a>`).join("");
+  if (connectDots) connectDots.innerHTML = items.map((_, index) => `<button type="button" class="discover-connect-dot${index === 0 ? " is-active" : ""}" data-connect-dot="${index}" aria-label="Ver contenido ${index + 1}"></button>`).join("");
+  connectCarousel.querySelectorAll("[data-connect-slide]").forEach((slide) => slide.addEventListener("click", (event) => {
+    const targetIndex = Number(slide.dataset.connectSlide);
+    if (targetIndex !== connectIndex) { event.preventDefault(); connectIndex = targetIndex; updateConnectCarousel(); }
+  }));
+  connectDots?.querySelectorAll("[data-connect-dot]").forEach((dot) => dot.addEventListener("click", () => { connectIndex = Number(dot.dataset.connectDot); updateConnectCarousel(); }));
+  updateConnectCarousel();
+};
+
+const updateConnectCarousel = () => {
+  if (!connectCarousel) return;
+  connectCarousel.querySelectorAll("[data-connect-slide]").forEach((slide, index) => slide.classList.toggle("is-active", index === connectIndex));
+  connectCarousel.querySelectorAll("[data-connect-slide]").forEach((slide, index) => {
+    const previous = (connectIndex - 1 + connectItems.length) % connectItems.length;
+    const next = (connectIndex + 1) % connectItems.length;
+    const state = index === connectIndex ? "active" : index === previous ? "prev" : index === next ? "next" : "hidden";
+    slide.classList.toggle("is-prev", index === previous);
+    slide.classList.toggle("is-next", index === next);
+    slide.style.display = state === "hidden" ? "none" : "flex";
+    slide.style.setProperty("opacity", state === "active" ? "1" : "0.62", "important");
+    slide.style.pointerEvents = state === "hidden" ? "none" : "auto";
+    slide.style.zIndex = state === "active" ? "2" : "1";
+    slide.style.setProperty("transform", connectTransformFor(state), "important");
+  });
+  connectDots?.querySelectorAll("[data-connect-dot]").forEach((dot, index) => dot.classList.toggle("is-active", index === connectIndex));
+  connectCarousel.style.setProperty("--connect-index", connectIndex);
+  applyConnectTitleSize();
+  window.clearTimeout(connectAnimationTimer);
+  connectAnimationTimer = window.setTimeout(() => {
+    connectCarousel.querySelectorAll("[data-connect-slide]").forEach((slide, index) => {
+      const previous = (connectIndex - 1 + connectItems.length) % connectItems.length;
+      const next = (connectIndex + 1) % connectItems.length;
+      const state = index === connectIndex ? "active" : index === previous ? "prev" : index === next ? "next" : "hidden";
+      slide.style.setProperty("transform", connectTransformFor(state), "important");
+      slide.style.transition = "none";
+    });
+    window.requestAnimationFrame(() => connectCarousel.querySelectorAll("[data-connect-slide]").forEach((slide) => { slide.style.transition = ""; }));
+  }, 620);
+};
+
+document.querySelector("[data-connect-prev]")?.addEventListener("click", () => { if (connectItems.length) { connectIndex = (connectIndex - 1 + connectItems.length) % connectItems.length; updateConnectCarousel(); } });
+document.querySelector("[data-connect-next]")?.addEventListener("click", () => { if (connectItems.length) { connectIndex = (connectIndex + 1) % connectItems.length; updateConnectCarousel(); } });
+
+const loadConnectCarousel = async () => {
+  if (!connectCarousel || !window._supabase) return;
+  const month = new Date().getMonth() + 1;
+  const { data, error } = await window._supabase.from("carrusel_conexion").select("*").eq("activo", true).order("orden", { ascending: true });
+  if (error || !data?.length) return;
+  const currentItems = data.filter((item) => item.tipo === "fijo" || item.mes === month);
+  if (currentItems.length) renderConnectCarousel(currentItems);
+};
+
+if (connectCarousel) {
+  const fallbackSlides = [...connectCarousel.querySelectorAll(".discover-card")];
+  connectItems = fallbackSlides;
+  fallbackSlides.forEach((slide, index) => { slide.dataset.connectSlide = index; slide.classList.toggle("is-active", index === 0); });
+  if (connectDots) connectDots.innerHTML = fallbackSlides.map((_, index) => `<button type="button" class="discover-connect-dot${index === 0 ? " is-active" : ""}" data-connect-dot="${index}" aria-label="Ver contenido ${index + 1}"></button>`).join("");
+  fallbackSlides.forEach((slide) => slide.addEventListener("click", (event) => {
+    const targetIndex = Number(slide.dataset.connectSlide);
+    if (targetIndex !== connectIndex) { event.preventDefault(); connectIndex = targetIndex; updateConnectCarousel(); }
+  }));
+  connectDots?.querySelectorAll("[data-connect-dot]").forEach((dot) => dot.addEventListener("click", () => { connectIndex = Number(dot.dataset.connectDot); updateConnectCarousel(); }));
+  updateConnectCarousel();
+  loadConnectCarousel();
+}
 if (mobileNav) {
-  mobileNav.innerHTML = `<div class="mobile-nav-head"><span>Explora Nazareno</span><span>MENÚ</span></div>${navigationMarkup([...primaryNavigation, ...utilityNavigation], true)}<a class="mobile-live" href="mensajes.html"><span class="live-dot"></span> Ver la transmisión</a><div class="mobile-nav-contact"><strong>Hablemos</strong><a href="https://wa.link/62syyk" target="_blank" rel="noreferrer">WhatsApp ↗</a><p>Cali · Colombia</p></div>`;
+  const menuSections = [
+    ["Participa", [
+      ["Visítanos", "Horarios y ubicación", "visitanos.html", "fa-house"],
+      ["En vivo y prédicas", "Conéctate desde donde estés", "mensajes.html", "fa-play"],
+      ["Grupos", "Crece en comunidad", "grupos.html", "fa-people-group"],
+      ["Donación", "Generosidad en acción", "donar.html", "fa-heart"],
+      ["Servir", "Pon tus dones en movimiento", "ministerios.html", "fa-hands-helping"],
+      ["Actividades", "Próximos encuentros", "eventos.html", "fa-calendar-days"],
+    ]],
+    ["Descubre", [
+      ["Primera vez", "Todo lo que necesitas saber", "primera-vez.html", "fa-compass"],
+      ["Recursos", "Devocionales y materiales", "devocional.html", "fa-book-open"],
+      ["Bautismos", "Celebra tu decisión de seguir a Jesús", "contacto.html", "fa-cross"],
+    ]],
+    ["Conócenos", [
+      ["Nuestra iglesia", "Conoce nuestra historia y misión", "nosotros.html", "fa-church"],
+      ["Contacto", "Hablemos por WhatsApp", "contacto.html", "fa-message"],
+    ]],
+  ];
+  const menuSectionMarkup = menuSections.map(([heading, items]) => `<section class="menu-section"><h2>${heading}</h2><div class="menu-section-items">${items.map(([label, description, href, icon]) => `<a class="menu-item" href="${href}"><span class="menu-item-icon"><i class="fa-solid ${icon}" aria-hidden="true"></i></span><span><strong>${label}</strong><small>${description}</small></span><b aria-hidden="true">↗</b></a>`).join("")}</div></section>`).join("");
+  mobileNav.innerHTML = `<div class="mobile-nav-head"><div><span class="nav-kicker">Explora Nazareno</span><h2>Encuentra tu<br /><em>lugar.</em></h2></div><span class="nav-menu-label">MENÚ</span></div><p class="mobile-nav-intro">Conecta con la iglesia, encuentra información y da tu próximo paso.</p>${menuSectionMarkup}<div class="mobile-nav-contact"><strong>Hablemos</strong><a href="https://wa.link/62syyk" target="_blank" rel="noreferrer">WhatsApp ↗</a><p>Cali · Colombia</p></div>`;
 }
 
 if (header) {
   const headerActions = header.querySelector(".header-actions");
-  const oldHeaderCta = headerActions?.querySelector('.header-cta[href="visitanos.html"]');
-  oldHeaderCta?.remove();
-  if (headerActions && !headerActions.querySelector('a.header-cta[href="donar.html"]')) {
-    const donateLink = document.createElement("a");
-    donateLink.className = "header-cta";
-    donateLink.href = "donar.html";
-    donateLink.innerHTML = 'Donar <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>';
-    headerActions.insertBefore(donateLink, headerActions.firstChild);
-  }
-  if (headerActions && !headerActions.querySelector('a.header-cta[href="visitanos.html"]')) {
-    const visitLink = document.createElement("a");
-    visitLink.className = "header-cta header-cta-secondary";
-    visitLink.href = "visitanos.html";
-    visitLink.innerHTML = 'Planifica tu visita <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>';
-    headerActions.appendChild(visitLink);
-  }
+  headerActions?.querySelectorAll(".header-cta, .live-pill").forEach((element) => element.remove());
 }
 
 const mainContent = document.querySelector("main");
@@ -78,11 +174,19 @@ if (mainContent) {
 
 const setMenu = (open) => {
   if (!menuButton || !mobileNav) return;
+  const menuLines = menuButton.querySelectorAll("span");
   menuButton.setAttribute("aria-expanded", String(open));
   menuButton.setAttribute("aria-label", open ? "Cerrar menú" : "Abrir menú");
   mobileNav.setAttribute("aria-hidden", String(!open));
   mobileNav.classList.toggle("is-open", open);
   document.body.classList.toggle("menu-open", open);
+  if (menuLines.length) {
+    menuLines[0].style.transform = open ? "translateY(7px) rotate(45deg)" : "";
+    menuLines[menuLines.length - 1].style.transform = open ? "translateY(-7px) rotate(-45deg)" : "";
+    if (menuLines.length > 2) {
+      menuLines[1].style.opacity = open ? "0" : "";
+    }
+  }
 };
 
 if (menuButton && mobileNav) {
@@ -342,6 +446,30 @@ if (devotionalDate) {
     year: "numeric",
   }).format(new Date());
 }
+
+const loadPublishedDevotional = async () => {
+  const devotionalSection = document.querySelector("[data-public-devotional]");
+  if (!devotionalSection || !window._supabase) return;
+  const { data } = await window._supabase
+    .from("devocionales")
+    .select("titulo, resumen, contenido, imagen_url, publicar_at")
+    .eq("publicado", true)
+    .lte("publicar_at", new Date().toISOString())
+    .order("publicar_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (!data) return;
+  const title = document.querySelector("#today-title");
+  const copy = document.querySelector("#devotional-copy");
+  const link = document.querySelector("#devotional-link");
+  if (title) title.textContent = data.titulo;
+  if (copy) copy.textContent = data.resumen || data.contenido;
+  if (devotionalDate) devotionalDate.textContent = new Intl.DateTimeFormat("es-CO", { day: "numeric", month: "long", year: "numeric" }).format(new Date(data.publicar_at));
+  if (link) { link.textContent = "Leer devocional completo ↗"; link.href = "#today-title"; }
+  if (data.imagen_url) devotionalSection.style.setProperty("--devotional-image", `url("${data.imagen_url}")`);
+};
+
+loadPublishedDevotional();
 
 /* ========================================================================
   6. FALLBACK PARA VIDEOS ABIERTOS COMO ARCHIVO LOCAL

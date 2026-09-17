@@ -7,9 +7,9 @@
       name="description"
       content="Iglesia del Nazareno Cali. Una comunidad para conocer a Jesús, encontrar propósito y vivir la fe juntos."
     />
-    <title>Inicio | Iglesia del Nazareno Cali | NZRN</title>
+    <title>Iglesia del Nazareno Cali | NZRN</title>
     <meta name="description" content="Iglesia en Cali para conocer a Jesús, conectar en comunidad y servir con propósito. Consulta horarios de cultos y planifica tu visita a Nazareno Cali." />
-    <link rel="icon" type="image/png" href="Media/logoNegro.png" />
+    <link rel="icon" type="image/png" href="Media/favicon.png" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
     <script type="application/ld+json">
       {
@@ -56,12 +56,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=Cormorant+Garamond:ital,wght@0,500;1,500;1,600&family=Sora:wght@400;500;600;700;800&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      rel="stylesheet"
-      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    />
+      rel="stylesheet"/>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
@@ -76,24 +71,25 @@
           alt="Iglesia del Nazareno Cali"
       /></a>
       <nav class="main-nav" aria-label="Navegación principal">
-        <a class="active" href="index.html">Inicio</a
-        ><a href="primera-vez.html">Primera vez</a
-        ><a href="ministerios.html">Ministerios</a
-        ><a href="grupos.html">Grupos</a><a href="eventos.html">Eventos</a
-        ><a href="nosotros.html">Nosotros</a>
+        <form class="site-search" role="search" action="index.html" method="get">
+          <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+          <input type="search" name="q" placeholder="Buscar" aria-label="Buscar en Nazareno Cali" />
+        </form>
+        <a href="donar.html">Donación</a
+        ><a href="grupos.html">Grupos</a
+        ><a href="ministerios.html">Servir</a
+        ><a href="eventos.html">Actividades</a
+        ><a href="nosotros.html">Conócenos</a>
       </nav>
       <div class="header-actions">
-        <a class="header-cta" href="donar.html">Donar <span>↗</span></a
-        ><a class="live-pill" href="mensajes.html"
-          ><span class="live-dot"></span>Ver en vivo</a
-        ><button
+        <button
           class="menu-button"
           type="button"
           aria-expanded="false"
           aria-controls="mobile-nav"
           aria-label="Abrir menú"
         >
-          <span></span><span></span>
+          <span></span><span></span><span></span>
         </button>
       </div>
     </header>
@@ -124,66 +120,45 @@
     </div>
     <main>
       <section class="hero" id="inicio">
-        <div class="hero-rail">
-          <span>01</span><i></i><span>CALI · COLOMBIA</span>
-        </div>
-        <div class="hero-copy reveal">
+        <video class="hero-video" autoplay muted loop playsinline poster="Media/01.jpg">
+          <source src="Media/video-institucional.mp4" type="video/mp4" />
+        </video>
+        <div class="hero-shade"></div>
+        <div class="hero-video-copy reveal">
           <p class="eyebrow">Iglesia del Nazareno · Cali, Colombia</p>
-          <h1>
-            Amamos a Dios.<br />Amamos a las personas.<br /><em
-              >Imitamos a Jesús.</em
-            >
-          </h1>
-          <p class="hero-intro">
-            Somos una familia que sigue a Jesús, sirve a la ciudad y celebra la
-            vida juntos.
-          </p>
+          <h1>Amamos a Dios.<br />Amamos a las personas.<br /><em>Imitamos a Jesús.</em></h1>
+          <p class="hero-intro">Una familia que sigue a Jesús, sirve a la ciudad y celebra la vida juntos.</p>
           <div class="hero-actions">
-            <a class="button button-dark" href="visitanos.html"
-              >Planea tu visita <span>↗</span></a
-            ><a class="text-link" href="mensajes.html"
-              >Mira el último mensaje <span>↓</span></a
-            >
+            <a class="button button-light" href="visitanos.html">Planea tu visita <span>↗</span></a>
+            <a class="text-link" href="mensajes.html">Conoce nuestra historia <span>↗</span></a>
           </div>
         </div>
-        <div class="hero-visual reveal reveal-delay">
-          <img
-            src="Media/01.jpg"
-            alt="Celebración de la Iglesia del Nazareno Cali"
-          />
-          <div class="hero-stamp">
-            <span>FE<br />+<br />ESPERANZA</span>
-          </div>
-          <div class="hero-caption">
-            Una iglesia para<br />toda la familia <span>— 01</span>
-          </div>
-        </div>
+        <div class="hero-video-meta"><span>01</span><i></i><span>VIDEO INSTITUCIONAL</span></div>
+        <a class="hero-scroll" href="#conecta" aria-label="Bajar a la siguiente sección">Desliza <span>↓</span></a>
       </section>
-      <section class="community next-step" id="proximo-paso" aria-labelledby="next-step-title">
-        <div class="section-label light">
-          <span>04</span><span>Tu próximo paso</span>
+      <section class="discover-connect" id="conecta" aria-labelledby="discover-connect-title">
+        <div class="discover-connect-intro">
+          <p class="eyebrow">Tu lugar en Nazareno</p>
+          <h2 id="discover-connect-title">Descubre más maneras<br /><em>de conectar.</em></h2>
+          <p>Siempre hay una nueva forma de participar en lo que Dios está haciendo a través de nuestra iglesia.</p>
         </div>
-        <div class="community-heading reveal">
-          <h2 id="next-step-title">Da tu<br /><i>próximo paso.</i></h2>
-          <p>Elige una ruta sencilla para avanzar en tu relación con Jesús y con la comunidad.</p>
+        <div class="discover-connect-grid" data-connect-carousel>
+          <a class="discover-card discover-card-wide" href="visitanos.html">
+            <img src="Media/01.jpg" alt="Celebración de domingo en la Iglesia del Nazareno Cali" />
+            <span class="discover-card-overlay"><small>01 · Cada domingo</small><strong>Celebraciones<br />de domingo</strong><span>Horarios, ubicación y qué esperar ↗</span></span>
+          </a>
+          <a class="discover-card discover-card-violet" href="grupos.html"><span class="discover-card-number">02</span><strong>Grupos de<br />conexión</strong><span>Crece acompañado durante la semana ↗</span></a>
+          <a class="discover-card discover-card-orange" href="eventos.html"><span class="discover-card-number">03</span><strong>Encuentros de<br />hombres y mujeres</strong><span>Conversaciones que nos acercan ↗</span></a>
+          <a class="discover-card discover-card-image" href="ministerios.html"><img src="Media/03.jpg" alt="Jóvenes reunidos en comunidad" /><span class="discover-card-overlay"><small>04 · Nueva generación</small><strong>Reuniones<br />de jóvenes</strong><span>Fe, amistad y propósito ↗</span></span></a>
+          <a class="discover-card discover-card-outline" href="contacto.html"><span class="discover-card-number">05</span><strong>Bautismos</strong><span>Celebra tu decisión de seguir a Jesús ↗</span></a>
+          <a class="discover-card discover-card-violet" href="ministerios.html"><span class="discover-card-number">06</span><strong>Servir</strong><span>Pon tus dones en movimiento ↗</span></a>
+          <a class="discover-card discover-card-outline" href="devocional.html"><span class="discover-card-number">07</span><strong>Crecer</strong><span>Recursos para tu camino de fe ↗</span></a>
         </div>
-        <nav class="community-cards reveal" aria-label="Rutas de Tu Próximo Paso">
-          <a class="community-card card-violet" href="mensajes.html">
-            <span class="card-number">01</span><span class="card-title">Conocer<br />a Jesús</span><span class="card-arrow">↗</span>
-          </a>
-          <a class="community-card card-outline" href="contacto.html">
-            <span class="card-number">02</span><span class="card-title">Bautismo<br />y fe pública</span><span class="card-arrow">↗</span>
-          </a>
-          <a class="community-card card-image" href="grupos.html">
-            <img src="Media/03.jpg" alt="Personas conectando en un grupo de la iglesia" /><span class="card-number">03</span><span class="card-title">Conectar<br />a un grupo</span><span class="card-arrow">↗</span>
-          </a>
-          <a class="community-card card-outline" href="ministerios.html">
-            <span class="card-number">04</span><span class="card-title">Servir<br />(Voluntariado)</span><span class="card-arrow">↗</span>
-          </a>
-          <a class="community-card card-violet" href="devocional.html">
-            <span class="card-number">05</span><span class="card-title">Crecer<br />(Recursos)</span><span class="card-arrow">↗</span>
-          </a>
-        </nav>
+        <div class="discover-connect-controls" aria-label="Controles del carrusel">
+          <button type="button" class="discover-connect-arrow" data-connect-prev aria-label="Contenido anterior">←</button>
+          <div class="discover-connect-dots" data-connect-dots></div>
+          <button type="button" class="discover-connect-arrow" data-connect-next aria-label="Contenido siguiente">→</button>
+        </div>
       </section>
       <div
         class="mission-ticker"
@@ -543,6 +518,7 @@
     ></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabase-client.js"></script>
+    <script src="js/visitas-tracker.js"></script>
     <script src="script.js"></script>
   </body>
 </html>
