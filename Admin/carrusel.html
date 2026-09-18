@@ -24,19 +24,129 @@
       </main>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="../js/supabase-client.js"></script><script src="./admin-auth.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/supabase-client.js"></script>
+    <script src="./admin-auth.js"></script>
     <script>
-      const client = window.supabaseAdmin.client; const form = document.querySelector("[data-carousel-form]"); const list = document.querySelector("[data-carousel-list]"); const status = document.querySelector("[data-carousel-status]"); const listStatus = document.querySelector("[data-list-status]"); const cancelButton = document.querySelector("[data-cancel-edit]");
-      const escapeHtml = (value = "") => String(value).replace(/[&<>'"]/g, (character) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" })[character]);
+      const getClient = () => window.supabaseAdmin?.client || window._supabase || window.supabaseClient;
+      const form = document.querySelector("[data-carousel-form]");
+      const list = document.querySelector("[data-carousel-list]");
+      const status = document.querySelector("[data-carousel-status]");
+      const listStatus = document.querySelector("[data-list-status]");
+      const cancelButton = document.querySelector("[data-cancel-edit]");
+      const escapeHtml = (value = "") => String(value).replace(/[&<>'"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" })[c]);
       const monthNames = ["", "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
       let rows = [];
-      const loadRows = async () => { const { data, error } = await client.from("carrusel_conexion").select("*").order("orden").order("created_at"); if (error) { listStatus.textContent = error.message; return; } rows = data || []; list.innerHTML = rows.length ? rows.map((item) => `<tr><td>${item.image_url ? `<img src="${escapeHtml(item.image_url)}" alt="" />` : "Sin imagen"}</td><td><strong>${escapeHtml(item.titulo)}</strong><br /><small>${escapeHtml(item.descripcion || "")}</small></td><td>${escapeHtml(item.tipo)}</td><td>${item.mes ? monthNames[item.mes] : "Todos"}</td><td>${item.orden}</td><td>${item.activo ? "Publicado" : "Oculto"}</td><td><button class="admin-button" type="button" data-edit="${item.id}">Editar</button> <button class="admin-button admin-button-danger" type="button" data-delete="${item.id}">Eliminar</button></td></tr>`).join("") : '<tr><td colspan="7" class="admin-empty">Todavía no hay piezas registradas.</td></tr>'; list.querySelectorAll("[data-edit]").forEach((button) => button.addEventListener("click", () => fillForm(rows.find((item) => item.id === button.dataset.edit)))); list.querySelectorAll("[data-delete]").forEach((button) => button.addEventListener("click", () => deleteRow(button.dataset.delete))); };
-      const fillForm = (item) => { Object.entries(item).forEach(([key, value]) => { const field = form.elements[key]; if (field && key !== "activo") field.value = value ?? ""; }); form.elements.activo.checked = item.activo; form.elements.id.value = item.id; document.querySelector("#carousel-form-title").textContent = "Editar pieza"; cancelButton.hidden = false; window.scrollTo({ top: 0, behavior: "smooth" }); };
-      const resetForm = () => { form.reset(); form.elements.id.value = ""; form.elements.activo.checked = true; document.querySelector("#carousel-form-title").textContent = "Agregar pieza"; cancelButton.hidden = true; status.textContent = ""; };
-      const uploadImage = async (file) => { if (!file) return null; const extension = file.name.split(".").pop().toLowerCase(); const path = `${crypto.randomUUID()}.${extension}`; const { error } = await client.storage.from("carrusel").upload(path, file, { cacheControl: "3600", upsert: false, contentType: file.type }); if (error) throw error; return client.storage.from("carrusel").getPublicUrl(path).data.publicUrl; };
-      const deleteRow = async (id) => { if (!window.confirm("¿Eliminar esta pieza?")) return; const { error } = await client.from("carrusel_conexion").delete().eq("id", id); if (error) { listStatus.textContent = error.message; return; } await loadRows(); };
-      form.addEventListener("submit", async (event) => { event.preventDefault(); status.textContent = "Guardando..."; try { const values = Object.fromEntries(new FormData(form)); const imageUrl = await uploadImage(form.elements.imagen.files[0]); const record = { titulo: values.titulo, eyebrow: values.eyebrow || null, descripcion: values.descripcion, tipo: values.tipo, mes: values.mes ? Number(values.mes) : null, orden: Number(values.orden || 0), activo: form.elements.activo.checked, link_url: values.link_url || null, image_url: imageUrl || values.image_url || null, image_alt: values.image_alt || values.titulo }; const user = (await client.auth.getUser()).data.user; record.created_by = user.id; const query = values.id ? client.from("carrusel_conexion").update(record).eq("id", values.id) : client.from("carrusel_conexion").insert(record); const { error } = await query; if (error) throw error; resetForm(); status.textContent = "Pieza guardada correctamente."; await loadRows(); } catch (error) { status.textContent = error.message || "No fue posible guardar la pieza."; } });
+
+      const loadRows = async () => {
+        const client = getClient();
+        if (!client) return;
+        const { data, error } = await client.from("carrusel_conexion").select("*").order("orden").order("created_at");
+        if (error) { listStatus.textContent = error.message; return; }
+        rows = data || [];
+        list.innerHTML = rows.length
+          ? rows.map((item) => `
+            <tr>
+              <td>${item.image_url ? `<img src="${escapeHtml(item.image_url)}" alt="" />` : "Sin imagen"}</td>
+              <td><strong>${escapeHtml(item.titulo)}</strong><br /><small>${escapeHtml(item.descripcion || "")}</small></td>
+              <td>${escapeHtml(item.tipo)}</td>
+              <td>${item.mes ? monthNames[item.mes] : "Todos"}</td>
+              <td>${item.orden}</td>
+              <td><span class="admin-badge ${item.activo ? 'admin-badge-active' : 'admin-badge-inactive'}">${item.activo ? "Publicado" : "Oculto"}</span></td>
+              <td style="white-space:nowrap;">
+                <button class="admin-button" type="button" data-edit="${item.id}">Editar</button>
+                <button class="admin-button admin-button-danger" type="button" data-delete="${item.id}">Eliminar</button>
+              </td>
+            </tr>`).join("")
+          : '<tr><td colspan="7" class="admin-empty">Todavía no hay piezas registradas.</td></tr>';
+
+        list.querySelectorAll("[data-edit]").forEach((btn) => btn.addEventListener("click", () => fillForm(rows.find((i) => i.id === btn.dataset.edit))));
+        list.querySelectorAll("[data-delete]").forEach((btn) => btn.addEventListener("click", () => deleteRow(btn.dataset.delete)));
+      };
+
+      const fillForm = (item) => {
+        Object.entries(item).forEach(([key, value]) => {
+          const field = form.elements[key];
+          if (field && key !== "activo") field.value = value ?? "";
+        });
+        form.elements.activo.checked = item.activo;
+        form.elements.id.value = item.id;
+        document.querySelector("#carousel-form-title").textContent = "Editar pieza";
+        cancelButton.hidden = false;
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      };
+
+      const resetForm = () => {
+        form.reset();
+        form.elements.id.value = "";
+        form.elements.activo.checked = true;
+        document.querySelector("#carousel-form-title").textContent = "Agregar pieza";
+        cancelButton.hidden = true;
+        status.textContent = "";
+      };
+
+      const uploadImage = async (file) => {
+        if (!file) return null;
+        const client = getClient();
+        const extension = file.name.split(".").pop().toLowerCase();
+        const path = `${crypto.randomUUID()}.${extension}`;
+        const { error } = await client.storage.from("carrusel").upload(path, file, { cacheControl: "3600", upsert: false, contentType: file.type });
+        if (error) throw error;
+        return client.storage.from("carrusel").getPublicUrl(path).data.publicUrl;
+      };
+
+      const deleteRow = async (id) => {
+        if (!window.confirm("¿Eliminar esta pieza?")) return;
+        const client = getClient();
+        const { error } = await client.from("carrusel_conexion").delete().eq("id", id);
+        if (error) { listStatus.textContent = error.message; return; }
+        await loadRows();
+      };
+
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        status.textContent = "Guardando...";
+        try {
+          const client = getClient();
+          const values = Object.fromEntries(new FormData(form));
+          const imageUrl = await uploadImage(form.elements.imagen.files[0]);
+          const record = {
+            titulo: values.titulo,
+            eyebrow: values.eyebrow || null,
+            descripcion: values.descripcion,
+            tipo: values.tipo,
+            mes: values.mes ? Number(values.mes) : null,
+            orden: Number(values.orden || 0),
+            activo: form.elements.activo.checked,
+            link_url: values.link_url || null,
+            image_url: imageUrl || values.image_url || null,
+            image_alt: values.image_alt || values.titulo
+          };
+          const user = (await client.auth.getUser()).data.user;
+          record.created_by = user.id;
+          const query = values.id ? client.from("carrusel_conexion").update(record).eq("id", values.id) : client.from("carrusel_conexion").insert(record);
+          const { error } = await query;
+          if (error) throw error;
+          resetForm();
+          status.textContent = "Pieza guardada correctamente.";
+          await loadRows();
+        } catch (error) {
+          status.textContent = error.message || "No fue posible guardar la pieza.";
+        }
+      });
+
       cancelButton.addEventListener("click", resetForm);
-      (async () => { try { const access = await window.supabaseAdmin.requireAdminPermission("carrusel"); if (!access) return; document.querySelector("[data-admin-email]").textContent = access.user.email; await loadRows(); } catch (error) { window.supabaseAdmin.showAuthError(listStatus, error); } })(); document.querySelector("[data-sign-out]").addEventListener("click", () => window.supabaseAdmin.signOutAdmin());
+      document.querySelector("[data-sign-out]")?.addEventListener("click", () => window.supabaseAdmin?.signOutAdmin());
+
+      (async () => {
+        try {
+          const access = await window.supabaseAdmin.requireAdminPermission("carrusel");
+          if (!access) return;
+          await loadRows();
+        } catch (error) {
+          window.supabaseAdmin.showAuthError(listStatus, error);
+        }
+      })();
     </script>
   </body>
 </html>

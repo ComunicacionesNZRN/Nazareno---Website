@@ -31,7 +31,7 @@
       .eq("usuario_id", currentUser.id)
       .maybeSingle();
 
-    // Si es el correo maestro principal siempre tiene acceso total
+    // Cuenta Maestra
     if (currentUser.email?.toLowerCase() === "comunicaciones@nazarenocali.org") {
       return {
         usuario_id: currentUser.id,
@@ -90,75 +90,96 @@
   };
 
   const requireAdminPermission = async (permission) => {
-    const user = await requireAdminSession();
-    if (!user) return null;
+    const client = getSupabaseClient();
+    if (!client) throw new Error("Cliente no disponible.");
+
+    const { data: { session } } = await client.auth.getSession();
+    if (!session) {
+      window.location.replace("login.html");
+      return null;
+    }
+
+    const user = session.user;
     const profile = await getAdminProfile(user);
+    if (!profile || profile.activo === false) {
+      window.location.replace("login.html");
+      return null;
+    }
 
-    // Administrador general tiene acceso ilimitado
-    if (profile.rol === "principal" || user.email?.toLowerCase() === "comunicaciones@nazarenocali.org") {
+    // Aplicar UI inmediatamente en la página activa
+    applyPermissionsUI(user, profile);
+
+    const isSuperAdmin = profile.rol === "principal" || user.email?.toLowerCase() === "comunicaciones@nazarenocali.org";
+    if (isSuperAdmin) return { user, profile };
+
+    // Permisos por Rol Especial
+    const roleLower = String(profile.rol || "").toLowerCase();
+    if (roleLower === "director creativo" && ["carrusel", "eventos", "devocionales"].includes(permission)) {
+      return { user, profile };
+    }
+    if (roleLower === "director plan del maestro" && ["grupos", "devocionales", "plan_maestro", "encuentros", "equipo", "bautismos"].includes(permission)) {
       return { user, profile };
     }
 
-    // Permisos por rol específico de Director
-    if (profile.rol === "director plan del maestro" && ["grupos", "devocionales", "plan_maestro", "bautismos", "encuentros", "equipo"].includes(permission)) {
+    // Permiso explícito en JSON
+    if (profile.permisos?.[permission]) {
       return { user, profile };
     }
 
-    if (!profile.permisos?.[permission]) {
-      throw new Error("Tu cuenta no tiene permisos para administrar este módulo.");
-    }
-    return { user, profile };
+    throw new Error("Tu cuenta no tiene permisos para acceder a este módulo.");
   };
 
   // Aplica la visibilidad en toda la interfaz
   const applyPermissionsUI = (user, profile) => {
+    if (!user || !profile) return;
     const isSuperAdmin = profile.rol === "principal" || user.email?.toLowerCase() === "comunicaciones@nazarenocali.org";
-    const isDirectorPlan = profile.rol === "director plan del maestro";
+    const roleLower = String(profile.rol || "").toLowerCase();
+    const isDirectorPlan = roleLower === "director plan del maestro";
+    const isDirectorCreativo = roleLower === "director creativo";
 
-    // 1. Mostrar correo en la esquina superior derecha
+    // 1. Mostrar correo en la barra superior
     document.querySelectorAll("[data-admin-email]").forEach((el) => {
-      el.textContent = user?.email || "Usuario activo";
+      el.textContent = user.email || "Usuario activo";
     });
 
-    // 2. Saludo personalizado dinámico: "Hola, [Nombre]."
+    // 2. Saludo personalizado
     const greetingEl = document.querySelector("[data-admin-greeting]");
     if (greetingEl) {
       const displayName = profile.nombre?.trim() || user.email?.split("@")[0] || "Administrador";
       greetingEl.innerHTML = `Hola, ${escapeHtml(displayName)}.`;
     }
 
-    // 3. Texto del rol junto al logo en el sidebar
+    // 3. Texto del rol en el sidebar
     const brandEl = document.querySelector(".admin-brand span, [data-admin-brand-text]");
     if (brandEl) {
       const displayRole = formatRole(profile.rol);
       brandEl.textContent = isSuperAdmin ? "Nazareno Admin" : `Nazareno · ${displayRole}`;
     }
 
-    // 4. Filtrar los enlaces de navegación del Sidebar
+    // 4. Filtrar enlaces de navegación
     const navLinks = document.querySelectorAll(".admin-nav a");
     navLinks.forEach((link) => {
       const href = link.getAttribute("href") || "";
-      
-      // Siempre visibles para todos los usuarios autenticados
       if (href.includes("index.html") || href.includes("perfil.html")) {
         link.style.display = "";
         return;
       }
-
-      // Si es SuperAdmin ve todo
       if (isSuperAdmin) {
         link.style.display = "";
         return;
       }
 
-      // Lista de módulos administrables
-      const modules = ["eventos", "grupos", "plan-maestro", "carrusel", "devocionales", "configuracion", "encuentros", "equipo"];
       let hasAccess = false;
+      const modules = ["eventos", "grupos", "plan-maestro", "carrusel", "devocionales", "configuracion", "encuentros", "equipo"];
 
       modules.forEach((mod) => {
         if (href.includes(mod)) {
           const permKey = mod.replace("-", "_");
-          if (profile.permisos?.[permKey] || (isDirectorPlan && ["grupos", "devocionales", "plan_maestro", "encuentros", "equipo"].includes(permKey))) {
+          if (
+            profile.permisos?.[permKey] ||
+            (isDirectorCreativo && ["carrusel", "eventos", "devocionales"].includes(permKey)) ||
+            (isDirectorPlan && ["grupos", "devocionales", "plan_maestro", "encuentros", "equipo"].includes(permKey))
+          ) {
             hasAccess = true;
           }
         }
@@ -167,7 +188,7 @@
       link.style.display = hasAccess ? "" : "none";
     });
 
-    // 5. Filtrar las tarjetas del Dashboard (index.html)
+    // 5. Filtrar tarjetas del Dashboard
     const dashboardCards = document.querySelectorAll(".admin-card[data-permission]");
     dashboardCards.forEach((card) => {
       if (isSuperAdmin) {
@@ -175,7 +196,11 @@
         return;
       }
       const perm = card.dataset.permission;
-      const hasAccess = Boolean(profile.permisos?.[perm]) || (isDirectorPlan && ["grupos", "devocionales", "plan_maestro", "encuentros", "bautismos", "equipo"].includes(perm));
+      const hasAccess = Boolean(
+        profile.permisos?.[perm] ||
+        (isDirectorCreativo && ["carrusel", "eventos", "devocionales"].includes(perm)) ||
+        (isDirectorPlan && ["grupos", "devocionales", "plan_maestro", "encuentros", "equipo"].includes(perm))
+      );
       card.style.display = hasAccess ? "" : "none";
     });
   };
