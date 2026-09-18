@@ -46,7 +46,11 @@ const navigationMarkup = (items, numbered = false) =>
 if (header) {
   const mainNavigation = header.querySelector(".main-nav");
   if (mainNavigation) {
+    // Antes de reconstruir los enlaces, guardamos la barra de búsqueda que
+    // vive dentro de .main-nav para no perderla al reemplazar el innerHTML.
+    const searchForm = mainNavigation.querySelector(".site-search");
     mainNavigation.innerHTML = navigationMarkup(primaryNavigation);
+    if (searchForm) mainNavigation.prepend(searchForm);
   }
 }
 
