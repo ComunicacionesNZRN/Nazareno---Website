@@ -25,6 +25,7 @@
           <div class="admin-stat"><span class="admin-stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="16" y1="2" x2="16" y2="6"/></svg></span><div><p class="admin-stat-label">Esta semana</p><p class="admin-stat-value" data-stat-week>—</p></div></div>
           <div class="admin-stat"><span class="admin-stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l5-5 4 4 8-9"/></svg></span><div><p class="admin-stat-label">Este mes</p><p class="admin-stat-value" data-stat-month>—</p></div></div>
         </section>
+        <p class="admin-status" data-visit-stats-status role="alert" style="margin-top:-8px"></p>
         <p class="admin-eyebrow" style="margin-bottom:16px">Gestión de contenido</p>
         <section class="admin-cards" aria-label="Accesos de administración">
           <a class="admin-card" data-permission="eventos" href="eventos.html"><div class="admin-card-top"><span class="admin-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="16" y1="2" x2="16" y2="6"/></svg></span><span class="admin-card-number">01</span></div><div><h2>Gestionar<br />eventos.</h2><p>Crea, actualiza o retira eventos de la agenda pública.</p></div><span class="admin-card-arrow">↗</span></a>
@@ -41,10 +42,10 @@
     <script src="../js/supabase-client.js"></script>
     <script src="./admin-auth.js"></script>
     <script>
-      const client = window.supabaseAdmin.client;
+      const adminClient = window.supabaseAdmin.client;
 
       const countVisitsSince = async (isoDate) => {
-        const { count, error } = await client
+        const { count, error } = await adminClient
           .from("site_visits")
           .select("*", { count: "exact", head: true })
           .gte("visited_at", isoDate);
@@ -71,6 +72,8 @@
           document.querySelector("[data-stat-month]").textContent = month.toLocaleString("es-CO");
         } catch (error) {
           document.querySelectorAll("[data-stat-today], [data-stat-week], [data-stat-month]").forEach((el) => (el.textContent = "—"));
+          const statusEl = document.querySelector("[data-visit-stats-status]");
+          if (statusEl) statusEl.textContent = `No se pudieron cargar las visitas: ${error.message || error}`;
           console.error("No se pudieron cargar las visitas:", error);
         }
       };

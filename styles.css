@@ -2279,8 +2279,8 @@ button {
   ======================================================================== */
 .groups {
   padding: 118px 4.5vw;
-  background: #111;
-  color: #fff;
+  background: #fff;
+  color: #141414;
   scroll-margin-top: 88px;
 }
 .groups-intro {
@@ -2296,12 +2296,12 @@ button {
   letter-spacing: -2px;
 }
 .groups-intro h2 em {
-  color: #9e8aff;
+  color: #5230DA;
 }
 .groups-intro > p {
   max-width: 330px;
   margin: 0 0 8px;
-  color: #d6d3dc;
+  color: #141414;
   font-size: 17px;
   line-height: 1.5;
 }
@@ -2673,9 +2673,22 @@ button {
   right: 0 !important;
   transform: none !important;
 }
+/* ========================================================================
+  CORRECCIÓN GLOBAL: EL FONDO DEL MENÚ MÓVIL NO BLOQUEA CLICS CUANDO ESTÁ CERRADO
+  ======================================================================== */
 .mobile-nav::after {
-  inset: 0 min(620px, 92vw) 0 0;
+  display: none !important;
+  pointer-events: none !important;
 }
+
+.mobile-nav.is-open::after {
+  /* El panel está anclado a la derecha (min(620px, 92vw)); la cortina solo
+     debe cubrir lo que queda a la IZQUIERDA del panel, nunca encima de él. */
+  inset: 0 min(620px, 92vw) 0 0 !important;
+  display: block !important;
+  pointer-events: auto !important;
+}
+
 .mobile-nav-head {
   display: flex;
   align-items: flex-start;
@@ -2955,7 +2968,6 @@ button {
   z-index: 1;
   display: flex;
   padding: 28px;
-  background: linear-gradient(180deg, transparent 18%, rgba(20, 20, 20, 0.86) 100%);
   color: #fff;
   flex-direction: column;
   gap: 7px;
@@ -3072,32 +3084,51 @@ button {
   bottom: 28px;
   left: 28px;
 }
+/* ========================================================================
+  CONTROLES DEL CARRUSEL DE PORTADA (CAPA SUPERIOR CLICKEABLE)
+  ======================================================================== */
 .discover-connect-controls {
+  position: relative;
+  z-index: 30; /* Por encima de todas las tarjetas */
   display: flex;
   width: min(1080px, 74vw);
-  margin: 22px auto 0;
+  margin: 28px auto 0;
   align-items: center;
   justify-content: space-between;
+  pointer-events: auto;
 }
+
 .discover-connect-arrow {
+  position: relative;
+  z-index: 35;
   display: grid;
-  width: 42px;
-  height: 42px;
+  width: 46px;
+  height: 46px;
   place-items: center;
   border: 0;
   border-radius: 50%;
   background: var(--ink);
-  color: #fff;
+  color: #ffffff;
   font-size: 22px;
-  cursor: pointer;
+  cursor: pointer !important;
+  pointer-events: auto !important;
+  user-select: none;
+  transition: background 0.2s ease, transform 0.2s ease;
 }
+
 .discover-connect-arrow:hover {
   background: var(--violet);
+  transform: scale(1.08);
 }
+
 .discover-connect-dots {
+  position: relative;
+  z-index: 35;
   display: flex;
-  gap: 7px;
+  gap: 8px;
+  align-items: center;
 }
+
 .discover-connect-dot {
   width: 8px;
   height: 8px;
@@ -3106,12 +3137,15 @@ button {
   border-radius: 50%;
   background: rgba(20, 20, 20, 0.25);
   cursor: pointer;
+  transition: width 0.25s ease, background-color 0.25s ease, border-radius 0.25s ease;
 }
+
 .discover-connect-dot.is-active {
   width: 24px;
   border-radius: 99px;
   background: var(--violet);
 }
+
 @keyframes discover-slide-in {
   from { opacity: 0; }
   to { opacity: 1; }
@@ -4500,5 +4534,986 @@ button {
   .footer-bottom-strip {
     flex-direction: column;
     align-items: flex-start;
+  }
+}
+
+/* ========================================================================
+  PÁGINA DE DONACIÓN / DAR (ESTILO SOUL CHURCH / GIVING)
+  ======================================================================== */
+.give-page {
+  padding: 130px 6vw 90px;
+  background: var(--paper);
+  color: var(--ink);
+}
+
+/* ========================================================================
+  INTRO EDITORIAL DONAR (CENTRADA Y CON TÍTULO MÁS GRANDE)
+  ======================================================================== */
+.give-hero {
+  padding: 60px 4vw 80px;
+  max-width: 900px;
+  margin: 0 auto;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+}
+
+.give-hero-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin: 0 auto;
+}
+
+.give-hero .eyebrow {
+  margin: 0 auto 16px;
+  color: var(--violet);
+  font-weight: 800;
+  letter-spacing: 0.14em;
+}
+
+.give-hero h1,
+.give-hero h2 {
+  margin: 10px auto 24px;
+  font: 800 clamp(56px, 8.5vw, 118px) / 0.92 var(--display); /* Más grande y negrita */
+  letter-spacing: -3px;
+  color: var(--ink);
+  max-width: 820px;
+}
+
+.give-hero h1 em,
+.give-hero h2 em {
+  color: var(--violet);
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 600;
+}
+
+.give-hero-lead {
+  max-width: 680px;
+  margin: 0 auto 36px;
+  color: var(--muted);
+  font-size: 18px;
+  line-height: 1.65;
+  text-align: center;
+}
+
+.give-hero-actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin: 0 auto;
+}
+
+/* Pilares de Impacto */
+.give-impact-section {
+  padding: 20px 0 90px;
+}
+
+.give-impact-header {
+  max-width: 650px;
+  margin-bottom: 45px;
+}
+
+.give-impact-header h2 {
+  font: 800 clamp(38px, 5.5vw, 68px) / 1 var(--display);
+  letter-spacing: -1.5px;
+  margin: 10px 0 0;
+}
+
+.give-impact-header h2 em {
+  color: var(--violet);
+  font-family: var(--serif);
+  font-style: italic;
+}
+
+.give-impact-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.give-impact-card {
+  display: flex;
+  flex-direction: column;
+  background: #faf8f5;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.give-impact-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 16px 36px rgba(20, 20, 20, 0.07);
+}
+
+.give-impact-img {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+}
+
+.give-impact-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.give-impact-card:hover .give-impact-img img {
+  transform: scale(1.05);
+}
+
+.give-impact-body {
+  padding: 28px 24px 30px;
+  display: flex;
+  flex-direction: column;
+}
+
+.impact-badge {
+  display: inline-block;
+  align-self: flex-start;
+  padding: 4px 10px;
+  background: rgba(82, 48, 218, 0.1);
+  color: var(--violet);
+  border-radius: 99px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+.give-impact-body h3 {
+  margin: 0 0 10px;
+  font: 700 22px / 1.2 var(--display);
+  letter-spacing: -0.5px;
+}
+
+.give-impact-body p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* Métodos de Donación Grid */
+.give-methods-section {
+  padding-bottom: 90px;
+}
+
+.give-methods-header {
+  max-width: 680px;
+  margin-bottom: 50px;
+}
+
+.give-methods-header h2 {
+  font: 800 clamp(44px, 6.5vw, 84px) / 0.95 var(--display);
+  letter-spacing: -2px;
+  margin: 10px 0 14px;
+}
+
+.give-methods-header h2 em {
+  color: var(--violet);
+  font-family: var(--serif);
+  font-style: italic;
+}
+
+.give-methods-header p {
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.give-methods-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.give-card {
+  padding: 34px 30px;
+  background: #faf8f5;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.give-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 36px rgba(20, 20, 20, 0.06);
+}
+
+.give-card-highlight {
+  background: #ffffff;
+  border-color: var(--violet);
+  box-shadow: 0 12px 32px rgba(82, 48, 218, 0.08);
+}
+
+.give-card-full {
+  grid-column: 1 / -1;
+}
+
+.give-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.give-card-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  background: rgba(82, 48, 218, 0.1);
+  color: var(--violet);
+  display: grid;
+  place-items: center;
+  font-size: 20px;
+}
+
+.give-card-tag {
+  padding: 4px 10px;
+  border-radius: 99px;
+  background: var(--violet);
+  color: #fff;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.give-card h3 {
+  margin: 0 0 10px;
+  font: 700 24px / 1.15 var(--display);
+  letter-spacing: -0.5px;
+}
+
+.give-card p {
+  margin: 0 0 20px;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.give-card-action {
+  margin-top: auto;
+  padding-top: 10px;
+}
+
+.give-note-small {
+  margin-top: 12px;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+/* Cajas de Copiado Fácil */
+.copy-box {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: auto;
+  padding: 16px;
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+
+.copy-box-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(20, 20, 20, 0.08);
+}
+
+.copy-box-row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.copy-box-row span {
+  color: var(--muted);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.copy-box-row code {
+  font-family: var(--body);
+  font-weight: 700;
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+
+.copy-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+  background: #faf8f5;
+  color: var(--ink);
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.copy-btn:hover {
+  background: var(--violet);
+  color: #fff;
+  border-color: var(--violet);
+}
+
+.copy-btn.is-copied {
+  background: #1e7e34;
+  color: #fff;
+  border-color: #1e7e34;
+}
+
+/* Caja de Transparencia Tributaria */
+.give-transparency-section {
+  padding-bottom: 90px;
+}
+
+.give-transparency-box {
+  padding: 60px 6vw;
+  background: var(--ink);
+  border-radius: var(--radius);
+  color: #ffffff;
+}
+
+.give-transparency-text {
+  max-width: 720px;
+}
+
+.give-transparency-box h2 {
+  margin: 14px 0 16px;
+  font: 800 clamp(32px, 4.5vw, 54px) / 1 var(--display);
+  letter-spacing: -1.5px;
+  color: #ffffff;
+}
+
+.give-transparency-box p {
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 15px;
+  line-height: 1.65;
+  margin: 0 0 28px;
+}
+
+.give-transparency-box strong {
+  color: #ffffff;
+}
+
+/* Give FAQs */
+.give-faq-section {
+  padding-bottom: 80px;
+  max-width: 850px;
+}
+
+.give-faq-header {
+  margin-bottom: 35px;
+}
+
+.give-faq-header h2 {
+  font: 800 clamp(36px, 5vw, 60px) / 1 var(--display);
+  letter-spacing: -1px;
+  margin: 10px 0 0;
+}
+
+.give-faq-header h2 em {
+  color: var(--violet);
+  font-family: var(--serif);
+  font-style: italic;
+}
+
+/* Responsividad */
+@media (max-width: 960px) {
+  .give-impact-grid,
+  .give-methods-grid {
+    grid-template-columns: 1fr;
+  }
+  .give-card-full {
+    grid-column: auto;
+  }
+}
+
+@media (max-width: 650px) {
+  .give-page {
+    padding: 105px 5vw 60px;
+  }
+  .give-card {
+    padding: 24px 20px;
+  }
+  .copy-box-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+  .copy-btn {
+    align-self: flex-end;
+  }
+}
+
+/* ========================================================================
+  HERO DE VIDEO DONACIONES (ESTILO SOUL CHURCH / GIVING)
+  ======================================================================== */
+.give-page {
+  padding: 88px 0 90px;
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.giving-hero-video-wrap {
+  position: relative;
+  width: 100%;
+  height: 85vh;
+  min-height: 560px;
+  max-height: 880px;
+  overflow: hidden;
+  border-radius: 0 0 38px 38px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  background: #141414;
+  margin-bottom: 50px;
+  box-shadow: 0 20px 50px rgba(20, 20, 20, 0.12);
+  isolation: isolate;
+}
+
+.giving-hero-media {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -2;
+}
+
+.giving-hero-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+.giving-hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(20, 20, 20, 0.4) 0%, rgba(20, 20, 20, 0.15) 50%, rgba(20, 20, 20, 0.75) 100%);
+  z-index: -1;
+}
+
+.giving-hero-title-wrap {
+  position: relative;
+  z-index: 5;
+  width: 100%;
+  text-align: center;
+  padding: 0 4vw 35px;
+}
+
+.giving-hero-big-title {
+  margin: 0;
+  font: 800 clamp(68px, 15vw, 210px) / 0.82 var(--display);
+  letter-spacing: -3px;
+  text-transform: uppercase;
+  color: #ffffff;
+  text-shadow: 0 14px 40px rgba(0, 0, 0, 0.45);
+  user-select: none;
+}
+
+/* Ajuste de márgenes laterales para las secciones inferiores de la página */
+.give-hero,
+.give-impact-section,
+.give-methods-section,
+.give-transparency-section,
+.give-faq-section {
+  padding-left: 6vw;
+  padding-right: 6vw;
+}
+
+@media (max-width: 700px) {
+  .giving-hero-video-wrap {
+    height: 70vh;
+    min-height: 440px;
+    border-radius: 0 0 24px 24px;
+  }
+  
+  .giving-hero-big-title {
+    letter-spacing: -1.5px;
+    padding-bottom: 10px;
+  }
+}
+/* ========================================================================
+  SECCIÓN CONÉCTATE / GRUPOS HERO SPLIT (TAMAÑO DE VIDEO VERTICAL 1080x1350)
+  ======================================================================== */
+.connect-page {
+  padding: 88px 0 90px;
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.connect-split-section {
+  padding: 60px 5vw 90px;
+  max-width: 1360px;
+  margin: 0 auto;
+}
+
+.connect-split-container {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr; /* Ajustado para video vertical */
+  gap: 6vw;
+  align-items: center;
+}
+
+.connect-split-copy {
+  display: flex;
+  flex-direction: column;
+}
+
+.connect-split-copy h2 {
+  margin: 10px 0 20px;
+  font: 800 clamp(44px, 5.5vw, 78px) / 0.96 var(--display);
+  letter-spacing: -2px;
+  color: var(--ink);
+}
+
+.connect-split-copy h2 em {
+  color: var(--violet);
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 500;
+}
+
+.connect-split-lead {
+  color: var(--muted);
+  font-size: 17px;
+  line-height: 1.65;
+  margin: 0 0 32px;
+  max-width: 540px;
+}
+
+.connect-split-actions {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+/* Tarjeta de Video Derecha (Vertical) */
+.connect-split-media {
+  width: 100%;
+  display: flex;
+  justify-content: center; /* Centra el video */
+}
+
+.connect-video-card {
+  position: relative;
+  width: 100%;
+  max-width: 460px; /* Tamaño visual óptimo en pantalla */
+  aspect-ratio: 1080 / 1350; /* Proporción nativa exacta: 1080px (ancho) x 1350px (alto) */
+  border-radius: 34px;
+  overflow: hidden;
+  background: #141414;
+  box-shadow: 0 24px 60px rgba(20, 20, 20, 0.12);
+}
+
+.connect-card-video,
+.connect-card-fallback-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+.connect-play-btn {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.95);
+  color: var(--ink);
+  border: none;
+  display: grid;
+  place-items: center;
+  font-size: 24px;
+  padding-left: 5px; /* Centrado óptico del ícono de play */
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  transition: transform 0.25s ease, background 0.25s ease, color 0.25s ease;
+  z-index: 5;
+}
+
+.connect-play-btn:hover {
+  transform: translate(-50%, -50%) scale(1.1);
+  background: var(--violet);
+  color: #ffffff;
+}
+
+.connect-card-tag {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  padding: 6px 14px;
+  background: rgba(20, 20, 20, 0.85);
+  color: #fff;
+  border-radius: 99px;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  backdrop-filter: blur(4px);
+  z-index: 4;
+}
+
+/* FAQ Grupos */
+.connect-faq-section {
+  padding: 80px 6vw 70px;
+  max-width: 850px;
+}
+
+.connect-faq-header {
+  margin-bottom: 35px;
+}
+
+.connect-faq-header h2 {
+  font: 800 clamp(36px, 5vw, 60px) / 1 var(--display);
+  letter-spacing: -1px;
+  margin: 10px 0 0;
+}
+
+.connect-faq-header h2 em {
+  color: var(--violet);
+  font-family: var(--serif);
+  font-style: italic;
+}
+
+@media (max-width: 960px) {
+  .connect-split-container {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+  
+  .connect-video-card {
+    max-width: 100%;
+    width: min(100%, 420px);
+    border-radius: 26px;
+  }
+}
+
+/* ========================================================================
+  PÁGINA PRÓXIMO PASO (AMOR EN ACCIÓN & LAKEWOOD BAPTISM)
+  ======================================================================== */
+.next-steps-page {
+  padding: 88px 0 90px;
+  background: var(--paper);
+  color: var(--ink);
+}
+
+/* Intro Centrada con Huella de pie */
+.steps-intro-section {
+  padding: 60px 5vw 70px;
+  text-align: center;
+}
+
+.steps-intro-inner {
+  max-width: 860px;
+  margin: 0 auto;
+}
+
+.steps-main-title {
+  margin: 12px 0 24px;
+  font: 800 clamp(44px, 6.5vw, 88px) / 0.96 var(--display);
+  letter-spacing: -2px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+}
+
+.title-footprint {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: rgba(82, 48, 218, 0.12);
+  color: var(--violet);
+  font-size: 24px;
+  transform: rotate(-15deg);
+  vertical-align: middle;
+}
+
+.steps-intro-lead {
+  max-width: 680px;
+  margin: 0 auto;
+  color: var(--muted);
+  font-size: 17px;
+  line-height: 1.65;
+}
+
+/* Grid de las 4 Etapas del Camino */
+.steps-pathway-section {
+  padding: 0 6vw 90px;
+  max-width: 1360px;
+  margin: 0 auto;
+}
+
+.steps-pathway-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.step-card {
+  display: flex;
+  gap: 24px;
+  padding: 36px 30px;
+  background: #faf8f5;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.step-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 36px rgba(20, 20, 20, 0.07);
+}
+
+.step-card-highlight {
+  background: #ffffff;
+  border-color: var(--violet);
+  box-shadow: 0 12px 30px rgba(82, 48, 218, 0.08);
+}
+
+.step-card-number {
+  font: 800 38px / 1 var(--display);
+  color: var(--violet);
+  flex-shrink: 0;
+}
+
+.step-card-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.step-card-tag {
+  align-self: flex-start;
+  padding: 4px 10px;
+  background: rgba(82, 48, 218, 0.1);
+  color: var(--violet);
+  border-radius: 99px;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.step-card-content h3 {
+  margin: 0 0 10px;
+  font: 700 24px / 1.15 var(--display);
+  letter-spacing: -0.5px;
+}
+
+.step-card-content p {
+  margin: 0 0 20px;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.step-card-content .text-link {
+  margin-top: auto;
+  color: var(--ink);
+  font-weight: 800;
+}
+
+.step-card-content .text-link:hover {
+  color: var(--violet);
+}
+
+/* Contenedor de Bautismos Estilo Lakewood Church */
+.baptism-section {
+  padding: 0 6vw 90px;
+  max-width: 1360px;
+  margin: 0 auto;
+}
+
+.baptism-card-lakewood {
+  display: grid;
+  grid-template-columns: 1fr 1.15fr;
+  background: #faf8f5;
+  border: 1px solid var(--line);
+  border-radius: 28px;
+  overflow: hidden;
+  box-shadow: 0 20px 50px rgba(20, 20, 20, 0.06);
+}
+
+.baptism-image-side {
+  position: relative;
+  width: 100%;
+  min-height: 100%;
+  background: #141414;
+}
+
+.baptism-image-side img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s ease;
+}
+
+.baptism-card-lakewood:hover .baptism-image-side img {
+  transform: scale(1.03);
+}
+
+.baptism-overlay-tag {
+  position: absolute;
+  top: 22px;
+  left: 22px;
+  padding: 6px 14px;
+  background: var(--violet);
+  color: #fff;
+  border-radius: 99px;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.baptism-content-side {
+  padding: 50px 48px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.baptism-content-side h2 {
+  margin: 8px 0 16px;
+  font: 800 clamp(38px, 4.5vw, 64px) / 0.98 var(--display);
+  letter-spacing: -1.5px;
+}
+
+.baptism-content-side h2 em {
+  color: var(--violet);
+  font-family: var(--serif);
+  font-style: italic;
+}
+
+.baptism-lead {
+  font-size: 16px;
+  color: var(--ink);
+  line-height: 1.6;
+  margin: 0 0 20px;
+  font-weight: 500;
+}
+
+.baptism-scripture-quote {
+  padding: 16px 20px;
+  background: #ffffff;
+  border-left: 3px solid var(--violet);
+  border-radius: 0 12px 12px 0;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 14px rgba(20, 20, 20, 0.03);
+}
+
+.baptism-scripture-quote p {
+  margin: 0 0 6px;
+  font-size: 13px;
+  font-style: italic;
+  color: var(--ink);
+  line-height: 1.55;
+}
+
+.baptism-scripture-quote small {
+  color: var(--violet);
+  font-weight: 700;
+  font-size: 11px;
+}
+
+.baptism-details-text {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 0 0 28px;
+}
+
+.baptism-actions {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+/* FAQ Próximo Paso */
+.steps-faq-section {
+  padding: 0 6vw 80px;
+  max-width: 850px;
+  margin: 0 auto;
+}
+
+.steps-faq-header {
+  margin-bottom: 35px;
+}
+
+.steps-faq-header h2 {
+  font: 800 clamp(36px, 5vw, 60px) / 1 var(--display);
+  letter-spacing: -1px;
+  margin: 10px 0 0;
+}
+
+.steps-faq-header h2 em {
+  color: var(--violet);
+  font-family: var(--serif);
+  font-style: italic;
+}
+
+/* Responsividad */
+@media (max-width: 960px) {
+  .steps-pathway-grid {
+    grid-template-columns: 1fr;
+  }
+  .baptism-card-lakewood {
+    grid-template-columns: 1fr;
+  }
+  .baptism-image-side {
+    aspect-ratio: 16 / 10;
+    min-height: auto;
+  }
+  .baptism-content-side {
+    padding: 35px 28px;
+  }
+}
+
+@media (max-width: 650px) {
+  .step-card {
+    flex-direction: column;
+    gap: 12px;
+    padding: 24px 20px;
+  }
+  .title-footprint {
+    width: 44px;
+    height: 44px;
+    font-size: 19px;
+  }
+  .steps-main-title {
+    gap: 8px;
   }
 }

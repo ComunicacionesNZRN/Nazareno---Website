@@ -77,6 +77,95 @@ const applyConnectTitleSize = () =>
     if (title) slide.style.setProperty("--connect-title-size", connectTitleSize(title.textContent.trim()));
   });
 
+const updateConnectCarousel = () => {
+  if (!connectCarousel) return;
+  const slides = connectCarousel.querySelectorAll(".discover-card");
+  const total = slides.length;
+  if (!total) return;
+
+  // Ajustar índice de forma segura
+  connectIndex = (connectIndex % total + total) % total;
+
+  slides.forEach((slide, index) => {
+    const previous = (connectIndex - 1 + total) % total;
+    const next = (connectIndex + 1) % total;
+    const state =
+      index === connectIndex ? "active" :
+      index === previous ? "prev" :
+      index === next ? "next" :
+      "hidden";
+
+    slide.classList.toggle("is-active", index === connectIndex);
+    slide.classList.toggle("is-prev", index === previous);
+    slide.classList.toggle("is-next", index === next);
+    slide.style.display = state === "hidden" ? "none" : "flex";
+    slide.style.setProperty("opacity", state === "active" ? "1" : "0.62", "important");
+    slide.style.pointerEvents = state === "hidden" ? "none" : "auto";
+    slide.style.zIndex = state === "active" ? "2" : "1";
+    slide.style.setProperty("transform", connectTransformFor(state), "important");
+  });
+
+  connectDots?.querySelectorAll("[data-connect-dot]").forEach((dot, index) =>
+    dot.classList.toggle("is-active", index === connectIndex)
+  );
+
+  connectCarousel.style.setProperty("--connect-index", connectIndex);
+  applyConnectTitleSize();
+
+  window.clearTimeout(connectAnimationTimer);
+  connectAnimationTimer = window.setTimeout(() => {
+    slides.forEach((slide, index) => {
+      const previous = (connectIndex - 1 + total) % total;
+      const next = (connectIndex + 1) % total;
+      const state =
+        index === connectIndex ? "active" :
+        index === previous ? "prev" :
+        index === next ? "next" :
+        "hidden";
+      slide.style.setProperty("transform", connectTransformFor(state), "important");
+      slide.style.transition = "none";
+    });
+    window.requestAnimationFrame(() =>
+      slides.forEach((slide) => {
+        slide.style.transition = "";
+      })
+    );
+  }, 620);
+};
+
+const prevSlide = () => {
+  const slides = connectCarousel?.querySelectorAll(".discover-card");
+  const total = slides?.length || connectItems.length;
+  if (!total) return;
+  connectIndex = (connectIndex - 1 + total) % total;
+  updateConnectCarousel();
+};
+
+const nextSlide = () => {
+  const slides = connectCarousel?.querySelectorAll(".discover-card");
+  const total = slides?.length || connectItems.length;
+  if (!total) return;
+  connectIndex = (connectIndex + 1) % total;
+  updateConnectCarousel();
+};
+
+// Enlazar botones prev y next
+document.querySelectorAll("[data-connect-prev]").forEach((btn) => {
+  btn.addEventListener("click", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    prevSlide();
+  });
+});
+
+document.querySelectorAll("[data-connect-next]").forEach((btn) => {
+  btn.addEventListener("click", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    nextSlide();
+  });
+});
+
 const renderConnectCarousel = (items) => {
   if (!connectCarousel || !items.length) return;
   connectItems = items;
@@ -103,6 +192,7 @@ const renderConnectCarousel = (items) => {
       .join("");
   }
 
+  // Permitir hacer clic directamente sobre las tarjetas laterales para avanzar o retroceder
   connectCarousel.querySelectorAll("[data-connect-slide]").forEach((slide) =>
     slide.addEventListener("click", (event) => {
       const targetIndex = Number(slide.dataset.connectSlide);
@@ -115,7 +205,8 @@ const renderConnectCarousel = (items) => {
   );
 
   connectDots?.querySelectorAll("[data-connect-dot]").forEach((dot) =>
-    dot.addEventListener("click", () => {
+    dot.addEventListener("click", (e) => {
+      e.preventDefault();
       connectIndex = Number(dot.dataset.connectDot);
       updateConnectCarousel();
     })
@@ -123,72 +214,6 @@ const renderConnectCarousel = (items) => {
 
   updateConnectCarousel();
 };
-
-const updateConnectCarousel = () => {
-  if (!connectCarousel) return;
-  connectCarousel.querySelectorAll("[data-connect-slide]").forEach((slide, index) =>
-    slide.classList.toggle("is-active", index === connectIndex)
-  );
-
-  connectCarousel.querySelectorAll("[data-connect-slide]").forEach((slide, index) => {
-    const previous = (connectIndex - 1 + connectItems.length) % connectItems.length;
-    const next = (connectIndex + 1) % connectItems.length;
-    const state =
-      index === connectIndex ? "active" :
-      index === previous ? "prev" :
-      index === next ? "next" :
-      "hidden";
-
-    slide.classList.toggle("is-prev", index === previous);
-    slide.classList.toggle("is-next", index === next);
-    slide.style.display = state === "hidden" ? "none" : "flex";
-    slide.style.setProperty("opacity", state === "active" ? "1" : "0.62", "important");
-    slide.style.pointerEvents = state === "hidden" ? "none" : "auto";
-    slide.style.zIndex = state === "active" ? "2" : "1";
-    slide.style.setProperty("transform", connectTransformFor(state), "important");
-  });
-
-  connectDots?.querySelectorAll("[data-connect-dot]").forEach((dot, index) =>
-    dot.classList.toggle("is-active", index === connectIndex)
-  );
-
-  connectCarousel.style.setProperty("--connect-index", connectIndex);
-  applyConnectTitleSize();
-
-  window.clearTimeout(connectAnimationTimer);
-  connectAnimationTimer = window.setTimeout(() => {
-    connectCarousel.querySelectorAll("[data-connect-slide]").forEach((slide, index) => {
-      const previous = (connectIndex - 1 + connectItems.length) % connectItems.length;
-      const next = (connectIndex + 1) % connectItems.length;
-      const state =
-        index === connectIndex ? "active" :
-        index === previous ? "prev" :
-        index === next ? "next" :
-        "hidden";
-      slide.style.setProperty("transform", connectTransformFor(state), "important");
-      slide.style.transition = "none";
-    });
-    window.requestAnimationFrame(() =>
-      connectCarousel.querySelectorAll("[data-connect-slide]").forEach((slide) => {
-        slide.style.transition = "";
-      })
-    );
-  }, 620);
-};
-
-document.querySelector("[data-connect-prev]")?.addEventListener("click", () => {
-  if (connectItems.length) {
-    connectIndex = (connectIndex - 1 + connectItems.length) % connectItems.length;
-    updateConnectCarousel();
-  }
-});
-
-document.querySelector("[data-connect-next]")?.addEventListener("click", () => {
-  if (connectItems.length) {
-    connectIndex = (connectIndex + 1) % connectItems.length;
-    updateConnectCarousel();
-  }
-});
 
 const loadConnectCarousel = async () => {
   const sb = getSupabaseClient();
@@ -209,14 +234,15 @@ const loadConnectCarousel = async () => {
   }
 };
 
+// Inicialización de respaldo si hay tarjetas estáticas en el HTML
 if (connectCarousel) {
   const fallbackSlides = [...connectCarousel.querySelectorAll(".discover-card")];
   if (fallbackSlides.length) {
     connectItems = fallbackSlides;
     fallbackSlides.forEach((slide, index) => {
       slide.dataset.connectSlide = index;
-      slide.classList.toggle("is-active", index === 0);
     });
+
     if (connectDots) {
       connectDots.innerHTML = fallbackSlides
         .map(
@@ -225,6 +251,7 @@ if (connectCarousel) {
         )
         .join("");
     }
+
     fallbackSlides.forEach((slide) =>
       slide.addEventListener("click", (event) => {
         const targetIndex = Number(slide.dataset.connectSlide);
@@ -235,12 +262,15 @@ if (connectCarousel) {
         }
       })
     );
+
     connectDots?.querySelectorAll("[data-connect-dot]").forEach((dot) =>
-      dot.addEventListener("click", () => {
+      dot.addEventListener("click", (e) => {
+        e.preventDefault();
         connectIndex = Number(dot.dataset.connectDot);
         updateConnectCarousel();
       })
     );
+
     updateConnectCarousel();
   }
   loadConnectCarousel();
@@ -444,20 +474,6 @@ const eventosData = [
 ];
 
 const eventStatusLabels = { proximo: "Próximo", "próximo": "Próximo", agotado: "Cupos agotados", finalizado: "Finalizado", cancelado: "Cancelado" };
-
-const formatPublicDate = (value) => {
-  if (!value) return "Por confirmar";
-  try {
-    return new Intl.DateTimeFormat("es-CO", {
-      weekday: "short",
-      day: "numeric",
-      month: "short",
-      year: "numeric"
-    }).format(new Date(`${value}T12:00:00`));
-  } catch {
-    return value;
-  }
-};
 
 const formatPublicTime = (time) => {
   if (!time) return "";
