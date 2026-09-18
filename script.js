@@ -15,13 +15,18 @@ if (!document.querySelector('link[href*="font-awesome"]')) {
   document.head.appendChild(iconStylesheet);
 }
 
+/* ========================================================================
+  NAVEGACIÓN SUPERIOR (DESKTOP)
+  ======================================================================== */
 const primaryNavigation = [
   ["Donación", "donar.html"],
   ["Grupos", "grupos.html"],
+  ["Encuentros", "encuentros.html"], // Pestaña añadida a la barra superior
   ["Servir", "ministerios.html"],
   ["Actividades", "eventos.html"],
   ["Conócenos", "nosotros.html"],
 ];
+
 
 const utilityNavigation = [
   ["Inicio", "index.html"],
@@ -277,7 +282,7 @@ if (connectCarousel) {
 }
 
 /* ========================================================================
-  MENÚ LATERAL MÓVIL Y ACCIONES
+  MENÚ LATERAL MÓVIL (ORGANIZACIÓN EXACTA SEGÚN TU CAPTURA)
   ======================================================================== */
 if (mobileNav) {
   const menuSections = [
@@ -285,6 +290,7 @@ if (mobileNav) {
       ["Visítanos", "Horarios y ubicación", "visitanos.html", "fa-house"],
       ["En vivo y prédicas", "Conéctate desde donde estés", "mensajes.html", "fa-play"],
       ["Grupos", "Crece en comunidad", "grupos.html", "fa-people-group"],
+      ["Encuentros H/M", "Retiros de hombres y mujeres", "encuentros.html", "fa-users-between-lines"],
       ["Donación", "Generosidad en acción", "donar.html", "fa-heart"],
       ["Servir", "Pon tus dones en movimiento", "ministerios.html", "fa-hands-helping"],
       ["Actividades", "Próximos encuentros", "eventos.html", "fa-calendar-days"],
@@ -299,19 +305,43 @@ if (mobileNav) {
       ["Contacto", "Hablemos por WhatsApp", "contacto.html", "fa-message"],
     ]],
   ];
+
   const menuSectionMarkup = menuSections
     .map(
       ([heading, items]) =>
-        `<section class="menu-section"><h2>${heading}</h2><div class="menu-section-items">${items
-          .map(
-            ([label, description, href, icon]) =>
-              `<a class="menu-item" href="${href}"><span class="menu-item-icon"><i class="fa-solid ${icon}" aria-hidden="true"></i></span><span><strong>${label}</strong><small>${description}</small></span><b aria-hidden="true">↗</b></a>`
-          )
-          .join("")}</div></section>`
+        `<section class="menu-section">
+          <h2>${heading}</h2>
+          <div class="menu-section-items">
+            ${items
+              .map(
+                ([label, description, href, icon]) =>
+                  `<a class="menu-item" href="${href}">
+                    <span class="menu-item-icon"><i class="fa-solid ${icon}" aria-hidden="true"></i></span>
+                    <span><strong>${label}</strong><small>${description}</small></span>
+                    <b aria-hidden="true">↗</b>
+                  </a>`
+              )
+              .join("")}
+          </div>
+        </section>`
     )
     .join("");
 
-  mobileNav.innerHTML = `<div class="mobile-nav-head"><div><span class="nav-kicker">Explora Nazareno</span><h2>Encuentra tu<br /><em>lugar.</em></h2></div><span class="nav-menu-label">MENÚ</span></div><p class="mobile-nav-intro">Conecta con la iglesia, encuentra información y da tu próximo paso.</p>${menuSectionMarkup}<div class="mobile-nav-contact"><strong>Hablemos</strong><a href="https://wa.link/62syyk" target="_blank" rel="noreferrer">WhatsApp ↗</a><p>Cali · Colombia</p></div>`;
+  mobileNav.innerHTML = `
+    <div class="mobile-nav-head">
+      <div>
+        <span class="nav-kicker">Explora Nazareno</span>
+        <h2>ENCUENTRA TU<br /><em>LUGAR.</em></h2>
+      </div>
+      <span class="nav-menu-label">MENÚ</span>
+    </div>
+    <p class="mobile-nav-intro">Conecta con la iglesia, encuentra información y da tu próximo paso.</p>
+    ${menuSectionMarkup}
+    <div class="mobile-nav-contact">
+      <strong>Hablemos</strong>
+      <a href="https://wa.link/62syyk" target="_blank" rel="noreferrer">WhatsApp ↗</a>
+      <p>Cali · Colombia</p>
+    </div>`;
 }
 
 if (header) {
@@ -503,7 +533,6 @@ const renderElevationEvents = (events) => {
             <h2>${featuredEvent.titulo}</h2>
             ${featuredEvent.descripcion ? `<p>${featuredEvent.descripcion}</p>` : ""}
             <div class="event-hero-meta">
-              <span><i class="fa-regular fa-calendar"></i> ${formatPublicDate(featuredEvent.fecha)}</span>
               <span><i class="fa-regular fa-clock"></i> ${formatPublicTime(featuredEvent.hora)}</span>
               <span><i class="fa-solid fa-location-dot"></i> ${featuredEvent.ubicacion || "Sede Cali"}</span>
               ${featuredEvent.requisitos ? `<span><i class="fa-solid fa-circle-info"></i> ${featuredEvent.requisitos}</span>` : ""}
@@ -533,7 +562,6 @@ const renderElevationEvents = (events) => {
           <h3>${event.titulo}</h3>
           <p class="event-elevation-location">${event.ubicacion || 'Sede Principal Cali'}</p>
           <div class="event-elevation-details">
-            <span><i class="fa-regular fa-calendar"></i> ${formatPublicDate(event.fecha)}</span>
             <span><i class="fa-regular fa-clock"></i> ${formatPublicTime(event.hora)}</span>
             ${event.requisitos ? `<span><i class="fa-solid fa-circle-check"></i> ${event.requisitos}</span>` : ""}
           </div>
@@ -925,3 +953,185 @@ if (footerNewsletterForm) {
     }
   });
 }
+
+/* ========================================================================
+  MÓDULO NOSOTROS: SCROLLSPY, CARRUSEL DE EQUIPO Y PUNTOS INTERACTIVOS
+  ======================================================================== */
+const initAboutPage = () => {
+  // 1. Scrollspy activo para el sidebar
+  const sections = document.querySelectorAll(".about-section");
+  const navLinks = document.querySelectorAll(".about-nav-link");
+
+  if (sections.length && navLinks.length) {
+    window.addEventListener(
+      "scroll",
+      () => {
+        let current = "";
+        sections.forEach((section) => {
+          const sectionTop = section.offsetTop - 140;
+          if (window.scrollY >= sectionTop) {
+            current = section.getAttribute("id");
+          }
+        });
+
+        navLinks.forEach((link) => {
+          link.classList.remove("is-active");
+          if (link.getAttribute("href") === `#${current}`) {
+            link.classList.add("is-active");
+          }
+        });
+      },
+      { passive: true },
+    );
+  }
+
+  // 2. Controladores del Carrusel y Puntos Interactivos
+  const track = document.getElementById("team-carousel-track");
+  const btnPrev = document.getElementById("team-prev");
+  const btnNext = document.getElementById("team-next");
+  const dotsContainer = document.getElementById("team-dots");
+
+  if (!track) return;
+
+  const getCardStep = () => {
+    const firstCard = track.querySelector(".cornerstone-member-card");
+    return firstCard ? firstCard.offsetWidth + 24 : 300;
+  };
+
+  const updateActiveDot = () => {
+    if (!dotsContainer) return;
+    const cards = track.querySelectorAll(".cornerstone-member-card");
+    if (!cards.length) return;
+
+    const step = getCardStep();
+    const activeIndex = Math.min(
+      cards.length - 1,
+      Math.max(0, Math.round(track.scrollLeft / step)),
+    );
+
+    const dots = dotsContainer.querySelectorAll(".cornerstone-dot");
+    dots.forEach((dot, index) => {
+      dot.classList.toggle("active", index === activeIndex);
+    });
+  };
+
+  if (btnPrev && btnNext) {
+    btnPrev.addEventListener("click", () => {
+      track.scrollBy({ left: -getCardStep(), behavior: "smooth" });
+    });
+    btnNext.addEventListener("click", () => {
+      track.scrollBy({ left: getCardStep(), behavior: "smooth" });
+    });
+  }
+
+  track.addEventListener(
+    "scroll",
+    () => {
+      window.requestAnimationFrame(updateActiveDot);
+    },
+    { passive: true },
+  );
+
+  const bindDotsClicks = () => {
+    if (!dotsContainer) return;
+    const dots = dotsContainer.querySelectorAll(".cornerstone-dot");
+    const cards = track.querySelectorAll(".cornerstone-member-card");
+
+    dots.forEach((dot, index) => {
+      dot.addEventListener("click", () => {
+        if (cards[index]) {
+          const step = getCardStep();
+          track.scrollTo({
+            left: index * step,
+            behavior: "smooth",
+          });
+        }
+      });
+    });
+  };
+
+  // 3. Renderizado y Carga desde Supabase
+  const MIN_TEAM_CARDS = 7;
+  const placeholderCardHTML = `
+    <article class="cornerstone-member-card is-placeholder">
+      <div class="placeholder-silhouette">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/>
+        </svg>
+      </div>
+    </article>
+  `;
+
+  const renderTeamCards = (members = []) => {
+    const realCards = members.map(
+      (m) => `
+      <article class="cornerstone-member-card">
+        <img class="cornerstone-member-photo" src="${m.foto_url || "Media/02.jpg"}" alt="${m.nombre}" loading="lazy" />
+        <div class="cornerstone-member-overlay"></div>
+        <div class="cornerstone-member-text">
+          <h4 class="cornerstone-member-name">${m.nombre}</h4>
+          <p class="cornerstone-member-role">${m.cargo}</p>
+        </div>
+      </article>
+    `,
+    );
+
+    const remainingPlaceholders = Math.max(0, MIN_TEAM_CARDS - realCards.length);
+    const placeholders = Array.from({ length: remainingPlaceholders }, () => placeholderCardHTML);
+    const allCards = [...realCards, ...placeholders];
+
+    track.innerHTML = allCards.join("");
+
+    if (dotsContainer) {
+      dotsContainer.innerHTML = Array.from(
+        { length: allCards.length },
+        (_, i) =>
+          `<button class="cornerstone-dot ${i === 0 ? "active" : ""}" aria-label="Posición ${i + 1}"></button>`,
+      ).join("");
+
+      bindDotsClicks();
+      updateActiveDot();
+    }
+  };
+
+  const loadTeam = async () => {
+    const sb = window._supabase || window.supabaseClient;
+    if (!sb) {
+      bindDotsClicks();
+      return;
+    }
+
+    try {
+      const { data, error } = await sb
+        .from("nosotros_equipo")
+        .select("*")
+        .eq("activo", true)
+        .order("orden", { ascending: true });
+
+      if (!error && data && data.length) {
+        const lead = data.find((m) => m.categoria === "pastor_principal");
+        if (lead) {
+          const nameEl = document.querySelector("#lead-pastor-names");
+          const imgEl = document.querySelector("#lead-pastor-img");
+          const bioEl = document.querySelector("#lead-pastor-bio");
+
+          if (nameEl) nameEl.textContent = lead.nombre;
+          if (imgEl && lead.foto_url) imgEl.src = lead.foto_url;
+          if (bioEl && lead.cargo) bioEl.textContent = `${lead.nombre} — ${lead.cargo}`;
+        }
+
+        renderTeamCards(data);
+      } else {
+        bindDotsClicks();
+      }
+    } catch (e) {
+      console.warn("Aviso al cargar equipo:", e);
+      bindDotsClicks();
+    }
+  };
+
+  bindDotsClicks();
+  loadTeam();
+};
+
+initAboutPage();

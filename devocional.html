@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Devocional | Iglesia del Nazareno Cali | NZRN</title>
+    <title>Devocional | Palabra de Vida | Iglesia del Nazareno Cali</title>
     <meta name="description" content="Reflexiones diarias, guía bíblica y recursos espirituales de la Iglesia del Nazareno Cali." />
     <link rel="icon" type="image/png" href="Media/favicon.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -24,10 +24,11 @@
       <nav class="main-nav" aria-label="Navegación principal">
         <a href="index.html">Inicio</a>
         <a href="visitanos.html">Visítanos</a>
-        <a href="ministerios.html">Servir</a>
         <a href="grupos.html">Grupos</a>
+        <a href="encuentros.html">Encuentros</a>
+        <a href="ministerios.html">Servir</a>
         <a href="eventos.html">Actividades</a>
-        <a class="active" href="devocional.html">Devocional</a>
+        <a href="donar.html">Donación</a>
         <a href="nosotros.html">Conócenos</a>
       </nav>
       <div class="header-actions">
@@ -39,35 +40,69 @@
 
     <div class="mobile-nav" id="mobile-nav" aria-hidden="true"></div>
 
-    <main class="inner-page">
-      <div class="inner-hero">
-        <p class="eyebrow">06 · Soy Nazareno</p>
-        <h1>Alimenta tu<br /><em>fe.</em></h1>
-        <p class="inner-lead">
-          Una pausa diaria para acercarte a Dios, leer su Palabra y caminar acompañado por la comunidad.
-        </p>
-      </div>
-
-      <!-- 1. Banner Destacado / Último Devocional Publicado -->
-      <div data-featured-devotional-slot></div>
-
-      <!-- 2. Grid de 3 Columnas: Devocionales Anteriores -->
-      <div class="events-section-header">
-        <h2>Devocionales anteriores</h2>
-      </div>
-
-      <section class="events-elevation-grid" data-devotionals-grid>
-        <!-- Se renderizan dinámicamente desde Supabase -->
+    <main class="give-page" style="padding-top: var(--header-height);">
+      
+      <!-- ========================================================================
+        1. BANNER HERO PANORÁMICO (PALABRA DE VIDA)
+        ======================================================================== -->
+      <section class="giving-hero-video-wrap">
+        <div class="giving-hero-media">
+          <video class="giving-hero-video" autoplay muted loop playsinline poster="Media/03.jpg">
+            <source src="Media/video-institucional.mp4" type="video/mp4" />
+          </video>
+          <div class="giving-hero-overlay"></div>
+        </div>
+        
+        <div class="giving-hero-title-wrap reveal">
+          <h1 class="giving-hero-big-title" style="font-size: clamp(52px, 11vw, 170px);">PALABRA DE VIDA</h1>
+        </div>
       </section>
 
-      <!-- Invitación a la lectura -->
-      <section class="inner-band" style="margin-top: 80px;">
-        <p class="eyebrow">Una práctica diaria</p>
-        <h2>Lee. Ora.<br /><em>Comparte.</em></h2>
-        <p class="inner-lead">
-          Encuentra más reflexiones y la guía bíblica del mes en la plataforma Soy Nazareno.
-        </p>
+      <!-- ========================================================================
+        2. INTRODUCCIÓN EDITORIAL CENTRADA
+        ======================================================================== -->
+      <section class="give-hero" style="padding-top: 10px; padding-bottom: 60px;">
+        <div class="give-hero-inner reveal">
+          <p class="eyebrow">06 · Soy Nazareno</p>
+          <h2>Alimenta tu<br /><em>fe.</em></h2>
+          <p class="give-hero-lead">
+            Una pausa diaria para acercarte a Dios, meditar en su Palabra y caminar acompañado por la comunidad en cada etapa de tu vida.
+          </p>
+        </div>
       </section>
+
+      <!-- ========================================================================
+        3. BANNER DESTACADO / ÚLTIMO DEVOCIONAL PUBLICADO
+        ======================================================================== -->
+      <div style="padding: 0 clamp(16px, 6vw, 80px); max-width: 1360px; margin: 0 auto;">
+        <div data-featured-devotional-slot></div>
+      </div>
+
+      <!-- ========================================================================
+        4. GRID DE DEVOCIONALES ANTERIORES (3 COLUMNAS)
+        ======================================================================== -->
+      <div style="padding: 0 clamp(16px, 6vw, 80px); max-width: 1360px; margin: 0 auto;">
+        <div class="events-section-header">
+          <h2>Devocionales anteriores</h2>
+        </div>
+
+        <section class="events-elevation-grid" data-devotionals-grid>
+          <!-- Se renderizan dinámicamente desde Supabase -->
+        </section>
+      </div>
+
+      <!-- ========================================================================
+        5. INVITACIÓN A LA LECTURA DIARIA
+        ======================================================================== -->
+      <div style="padding: 0 clamp(16px, 6vw, 80px); max-width: 1360px; margin: 0 auto;">
+        <section class="inner-band" style="margin-top: 80px; text-align: center;">
+          <p class="eyebrow" style="margin-left: auto; margin-right: auto;">Una práctica diaria</p>
+          <h2>Lee. Ora.<br /><em>Comparte.</em></h2>
+          <p class="inner-lead" style="margin: 0 auto; text-align: center; max-width: 650px;">
+            Encuentra más reflexiones y la guía bíblica del mes en la plataforma Soy Nazareno.
+          </p>
+        </section>
+      </div>
     </main>
 
     <!-- Footer Profesional Soul Church -->
@@ -95,7 +130,7 @@
           <ul class="footer-links-list">
             <li><a href="index.html">Inicio</a></li>
             <li><a href="visitanos.html">Planifica tu visita</a></li>
-            <li><a href="ministerios.html">Equipos de Servicio</a></li>
+            <li><a href="encuentros.html">Encuentros H/M</a></li>
             <li><a href="grupos.html">Grupos de Conexión</a></li>
             <li><a href="eventos.html">Actividades & Eventos</a></li>
             <li><a href="donar.html">Dar / Donación</a></li>
@@ -121,9 +156,6 @@
           <form class="footer-newsletter-form" data-footer-newsletter>
             <div class="footer-form-field">
               <input type="text" name="first_name" placeholder="Nombre" required />
-            </div>
-            <div class="footer-form-field">
-              <input type="text" name="last_name" placeholder="Apellido" required />
             </div>
             <div class="footer-form-field">
               <input type="email" name="email" placeholder="Correo electrónico" required />

@@ -23,6 +23,10 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="16" y1="2" x2="16" y2="6"/></svg>
             <span>Eventos</span>
           </a>
+          <a href="plan-maestro.html">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+            <span>Plan del Maestro (DPM)</span>
+          </a>
           <a href="grupos.html">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 20c0-3.3 2.5-5.5 5.5-5.5s5.5 2.2 5.5 5.5"/><circle cx="17" cy="8" r="2.4"/><path d="M15.5 14.8c2.6.3 4.5 2.3 4.5 5.2"/></svg>
             <span>Grupos</span>
@@ -52,7 +56,7 @@
           <div>
             <p class="admin-eyebrow">Cuenta personal</p>
             <h1 class="admin-title">Mi perfil.</h1>
-            <p class="admin-lead">Consulta tu cuenta, actualiza tu contraseña y administra colaboradores autorizados.</p>
+            <p class="admin-lead">Actualiza tu nombre, contraseña y administra los colaboradores autorizados.</p>
           </div>
           <div class="admin-user">
             <span>Sesión activa<br /><strong data-admin-email>Cargando...</strong></span>
@@ -70,8 +74,8 @@
               <input id="profile-email" type="email" readonly />
             </div>
             <div class="admin-field">
-              <label for="profile-name">Nombre</label>
-              <input id="profile-name" name="nombre" placeholder="Nombre del colaborador" />
+              <label for="profile-name">Tu Nombre (Aparecerá en el saludo del Dashboard)</label>
+              <input id="profile-name" name="nombre" placeholder="Ej: David / Emanuel" required />
             </div>
             <div class="admin-field">
               <label for="profile-password">Nueva contraseña</label>
@@ -88,11 +92,11 @@
           </form>
         </section>
 
-        <!-- Panel de Colaboradores (Solo Administrador Principal) -->
-        <section class="admin-panel" data-collaborators-panel style="margin-top:24px">
-          <p class="admin-eyebrow">Administración principal</p>
-          <h2 data-collab-form-title>Agregar colaborador</h2>
-          <p class="admin-lead">Crea o actualiza colaboradores, asigna su rol y define exactamente a qué módulos tienen acceso.</p>
+        <!-- Panel de Colaboradores (Visible para Administrador Principal y Director DPM) -->
+        <section class="admin-panel" data-collaborators-panel style="margin-top:24px" hidden>
+          <p class="admin-eyebrow">Gestión de Usuarios y Permisos</p>
+          <h2 data-collab-form-title>Agregar colaborador / Líder</h2>
+          <p class="admin-lead">Crea cuentas con sus respectivos roles y define a qué módulos tienen acceso.</p>
 
           <form class="admin-form" data-collaborator-form>
             <input type="hidden" name="collab_id" />
@@ -103,13 +107,13 @@
             </div>
             <div class="admin-field">
               <label for="collaborator-name">Nombre completo</label>
-              <input id="collaborator-name" name="nombre" required placeholder="Nombre del colaborador" />
+              <input id="collaborator-name" name="nombre" required placeholder="Nombre del líder o colaborador" />
             </div>
             
             <div class="admin-field">
               <label for="collaborator-role">Rol asignado</label>
               <select id="collaborator-role" name="rol" required>
-                <option value="colaborador">Colaborador</option>
+                <option value="colaborador">Líder / Colaborador</option>
                 <option value="director plan del maestro">Director Plan del Maestro</option>
                 <option value="director creativo">Director Creativo</option>
                 <option value="director de producción">Director de Producción</option>
@@ -117,67 +121,108 @@
               </select>
             </div>
 
-            <div class="admin-field" data-pwd-field>
+            <div class="admin-field">
               <label for="collaborator-password">Contraseña temporal</label>
               <input id="collaborator-password" name="password" type="password" minlength="8" placeholder="Mínimo 8 caracteres" />
             </div>
 
-            <!-- Switches con Iconos -->
+            <!-- Switches con Todos los Permisos del Sistema -->
             <div class="admin-field admin-field-full">
-              <label style="margin-bottom: 4px;">Permisos de módulos</label>
+              <label style="margin-bottom: 6px; font-size:12px; font-weight:800;">Permisos de módulos disponibles</label>
               <div class="admin-permissions-grid">
                 
+                <!-- Eventos -->
                 <label class="admin-permission-card">
                   <div class="admin-permission-info">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="16" y1="2" x2="16" y2="6"/></svg>
                     <span>Eventos</span>
                   </div>
                   <div class="admin-switch">
-                    <input type="checkbox" name="eventos" id="perm-eventos" />
+                    <input type="checkbox" name="eventos" />
                     <span class="admin-switch-slider"></span>
                   </div>
                 </label>
 
+                <!-- Grupos de Conexión -->
                 <label class="admin-permission-card">
                   <div class="admin-permission-info">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 20c0-3.3 2.5-5.5 5.5-5.5s5.5 2.2 5.5 5.5"/><circle cx="17" cy="8" r="2.4"/><path d="M15.5 14.8c2.6.3 4.5 2.3 4.5 5.2"/></svg>
                     <span>Grupos</span>
                   </div>
                   <div class="admin-switch">
-                    <input type="checkbox" name="grupos" id="perm-grupos" />
+                    <input type="checkbox" name="grupos" />
                     <span class="admin-switch-slider"></span>
                   </div>
                 </label>
 
+                <!-- Plan del Maestro -->
+                <label class="admin-permission-card">
+                  <div class="admin-permission-info">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                    <span>Plan Maestro (DPM)</span>
+                  </div>
+                  <div class="admin-switch">
+                    <input type="checkbox" name="plan_maestro" />
+                    <span class="admin-switch-slider"></span>
+                  </div>
+                </label>
+
+                <!-- Encuentros Hombres & Mujeres -->
+                <label class="admin-permission-card">
+                  <div class="admin-permission-info">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                    <span>Encuentros H/M</span>
+                  </div>
+                  <div class="admin-switch">
+                    <input type="checkbox" name="encuentros" />
+                    <span class="admin-switch-slider"></span>
+                  </div>
+                </label>
+
+                <!-- Bautismos -->
+                <label class="admin-permission-card">
+                  <div class="admin-permission-info">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
+                    <span>Bautismos</span>
+                  </div>
+                  <div class="admin-switch">
+                    <input type="checkbox" name="bautismos" />
+                    <span class="admin-switch-slider"></span>
+                  </div>
+                </label>
+
+                <!-- Carrusel -->
                 <label class="admin-permission-card">
                   <div class="admin-permission-info">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="13" height="13" rx="2"/><path d="M8 21h10a2 2 0 0 0 2-2V9"/></svg>
                     <span>Carrusel</span>
                   </div>
                   <div class="admin-switch">
-                    <input type="checkbox" name="carrusel" id="perm-carrusel" />
+                    <input type="checkbox" name="carrusel" />
                     <span class="admin-switch-slider"></span>
                   </div>
                 </label>
 
+                <!-- Devocionales -->
                 <label class="admin-permission-card">
                   <div class="admin-permission-info">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6.5c-1.6-1.3-3.7-2-6.5-2C4.7 4.5 4 5 4 5.8v12.4c0 .8.7 1.2 1.5 1.1 2.6-.3 4.6.2 6.5 1.7"/><path d="M12 6.5c1.6-1.3 3.7-2 6.5-2 .8 0 1.5.5 1.5 1.3v12.4c0 .8-.7 1.2-1.5 1.1-2.6-.3-4.6.2-6.5 1.7z"/><line x1="12" y1="6.5" x2="12" y2="21"/></svg>
                     <span>Devocionales</span>
                   </div>
                   <div class="admin-switch">
-                    <input type="checkbox" name="devocionales" id="perm-devocionales" />
+                    <input type="checkbox" name="devocionales" />
                     <span class="admin-switch-slider"></span>
                   </div>
                 </label>
 
+                <!-- Configuración -->
                 <label class="admin-permission-card">
                   <div class="admin-permission-info">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.5v3M12 18.5v3M21.5 12h-3M5.5 12h-3M18.6 5.4l-2.1 2.1M7.5 16.5l-2.1 2.1M18.6 18.6l-2.1-2.1M7.5 7.5 5.4 5.4"/></svg>
                     <span>Configuración</span>
                   </div>
                   <div class="admin-switch">
-                    <input type="checkbox" name="configuracion" id="perm-configuracion" />
+                    <input type="checkbox" name="configuracion" />
                     <span class="admin-switch-slider"></span>
                   </div>
                 </label>
@@ -186,7 +231,7 @@
             </div>
 
             <div class="admin-form-actions">
-              <button class="admin-button-primary" type="submit" data-submit-collab>Crear colaborador</button>
+              <button class="admin-button-primary" type="submit" data-submit-collab>Guardar colaborador</button>
               <button class="admin-button" type="button" data-cancel-collab-edit hidden>Cancelar edición</button>
             </div>
             <p class="admin-status" data-collaborator-status role="status"></p>
@@ -231,8 +276,9 @@
       const collaboratorStatus = document.querySelector("[data-collaborator-status]");
       const collaboratorsList = document.querySelector("[data-collaborators-list]");
 
-      const permissions = ["eventos", "grupos", "carrusel", "devocionales", "configuracion"];
+      const permissions = ["eventos", "grupos", "plan_maestro", "encuentros", "bautismos", "carrusel", "devocionales", "configuracion"];
       let collabRows = [];
+      let activeUserProfile = null;
 
       const escapeHtml = (value = "") =>
         String(value).replace(/[&<>'"]/g, (char) => ({
@@ -250,7 +296,6 @@
         collaboratorForm.elements.nombre.value = item.nombre || "";
         collaboratorForm.elements.rol.value = item.rol || "colaborador";
         
-        // Desactivar campo contraseña obligatoria en edición
         const pwdInput = collaboratorForm.elements.password;
         pwdInput.required = false;
         pwdInput.placeholder = "Dejar en blanco para no cambiar";
@@ -274,8 +319,8 @@
         const pwdInput = collaboratorForm.elements.password;
         pwdInput.required = true;
         pwdInput.placeholder = "Mínimo 8 caracteres";
-        collabFormTitle.textContent = "Agregar colaborador";
-        submitCollabBtn.textContent = "Crear colaborador";
+        collabFormTitle.textContent = "Agregar colaborador / Líder";
+        submitCollabBtn.textContent = "Guardar colaborador";
         cancelCollabBtn.hidden = true;
         collaboratorStatus.textContent = "";
       };
@@ -300,7 +345,7 @@
 
           collaboratorsList.innerHTML = collabRows
             .map((item) => {
-              const permsText = item.rol === "principal"
+              const permsText = item.rol === "principal" || item.correo === "comunicaciones@nazarenocali.org"
                 ? "Todos"
                 : permissions.filter((key) => item.permisos?.[key]).join(", ") || "Ninguno";
 
@@ -316,7 +361,7 @@
                 <td><span class="admin-badge ${item.activo !== false ? "admin-badge-active" : "admin-badge-inactive"}">${item.activo !== false ? "Activo" : "Inactivo"}</span></td>
                 <td style="white-space:nowrap;">
                   <button class="admin-button" type="button" data-edit-collab="${escapeHtml(item.usuario_id)}">Editar</button>
-                  ${item.rol !== 'principal' ? `<button class="admin-button admin-button-danger" type="button" data-toggle-status="${escapeHtml(item.usuario_id)}">${item.activo !== false ? 'Desactivar' : 'Activar'}</button>` : ''}
+                  ${item.rol !== 'principal' && item.correo !== 'comunicaciones@nazarenocali.org' ? `<button class="admin-button admin-button-danger" type="button" data-toggle-status="${escapeHtml(item.usuario_id)}">${item.activo !== false ? 'Desactivar' : 'Activar'}</button>` : ''}
                 </td>
               </tr>`;
             })
@@ -351,7 +396,7 @@
         await loadCollaborators();
       };
 
-      // Guardar perfil propio
+      // Guardar perfil propio (Nombre & Contraseña)
       profileForm.addEventListener("submit", async (event) => {
         event.preventDefault();
         profileStatus.textContent = "Guardando...";
@@ -364,10 +409,7 @@
             throw new Error("Las contraseñas no coinciden.");
           }
 
-          const { data: userData, error: userError } = await client.auth.getUser();
-          if (userError || !userData?.user) throw new Error("No hay usuario autenticado.");
-          const user = userData.user;
-
+          const user = (await client.auth.getUser()).data.user;
           const currentProfile = await window.supabaseAdmin.getAdminProfile(user);
 
           const { error: profileError } = await client.from("admin_perfiles").upsert({
@@ -406,7 +448,6 @@
 
         try {
           if (editingUserId) {
-            // Modo Edición: Actualizar rol y permisos
             const { error: updateError } = await client
               .from("admin_perfiles")
               .update({
@@ -419,7 +460,6 @@
             if (updateError) throw updateError;
             collaboratorStatus.textContent = "Colaborador actualizado correctamente.";
           } else {
-            // Modo Creación: Registrar usuario nuevo en Supabase Auth
             const isolatedClient = window.supabase.createClient(client.supabaseUrl, client.supabaseKey, {
               auth: { persistSession: false, autoRefreshToken: false }
             });
@@ -457,23 +497,25 @@
 
       cancelCollabBtn.addEventListener("click", resetCollabForm);
 
-      // Inicialización de la vista
       (async () => {
         try {
           const user = await window.supabaseAdmin.requireAdminSession();
           if (!user) return;
 
           userEmail.textContent = user.email || "Usuario activo";
-          const profileEmailInput = document.querySelector("#profile-email");
-          if (profileEmailInput) profileEmailInput.value = user.email || "";
+          document.querySelector("#profile-email").value = user.email || "";
 
           const profile = await window.supabaseAdmin.getAdminProfile(user);
-          const profileNameInput = document.querySelector("#profile-name");
-          if (profileNameInput && profile?.nombre) {
-            profileNameInput.value = profile.nombre;
+          activeUserProfile = profile;
+          if (profile?.nombre) {
+            document.querySelector("#profile-name").value = profile.nombre;
           }
 
-          if (profile?.rol === "principal") {
+          const isSuperAdmin = profile.rol === "principal" || user.email === "comunicaciones@nazarenocali.org";
+          const isDirectorPlan = profile.rol === "director plan del maestro";
+
+          // Administrador Principal y Director DPM pueden gestionar colaboradores/líderes
+          if (isSuperAdmin || isDirectorPlan) {
             collaboratorsPanel.hidden = false;
             await loadCollaborators();
           } else {
