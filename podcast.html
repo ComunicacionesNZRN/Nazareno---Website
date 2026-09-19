@@ -3,39 +3,41 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <title>Podcast Network | Iglesia del Nazareno Cali | NZRN</title>
+    <title>Podcast | Iglesia del Nazareno Cali | NZRN</title>
     <meta name="description" content="La red oficial de podcasts de la Iglesia del Nazareno Cali. Conversaciones de fe, prédicas en audio, liderazgo y juventud en Spotify y YouTube." />
     <link rel="icon" type="image/png" href="Media/favicon.png" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800;12..96,900&family=Sora:wght@400;500;600;700;800&family=Syne:wght@700;800;900&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800;12..96,900&family=Sora:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="styles.css" />
     <style>
       /* ========================================================================
-        ESTÉTICA THE RINGER (MEDIA NETWORK & PODCAST HUB)
+        ESTÉTICA THE RINGER · EXCLUSIVAMENTE CON BRICOLAGE GROTESQUE & SORA
         ======================================================================== */
       :root {
         --ringer-dark: #121316;
         --ringer-card: #1c1d22;
         --ringer-green: #1db954;
-        --ringer-red: #ff0000;
-        --ringer-border: rgba(255, 255, 255, 0.12);
+        --ringer-border: rgba(20, 20, 20, 0.12);
+        --ringer-dark-border: rgba(255, 255, 255, 0.12);
       }
 
-      .ringer-page {
+      body.ringer-page {
         background: #f8f6f0;
         color: var(--ink);
+        font-family: var(--body);
         padding-top: var(--header-height);
         padding-bottom: 120px;
+        overflow-x: hidden;
       }
 
       /* 1. Hero / Lead Episode (The Ringer Featured Showcase) */
       .ringer-hero-section {
-        padding: clamp(24px, 4vw, 50px) clamp(16px, 5vw, 60px) 40px;
+        padding: clamp(24px, 4vw, 50px) clamp(16px, 5vw, 60px) 30px;
         max-width: 1400px;
         margin: 0 auto;
       }
@@ -44,10 +46,10 @@
         display: flex;
         align-items: center;
         gap: 10px;
-        font-family: 'Syne', sans-serif;
+        font-family: var(--display);
         font-size: 11px;
-        font-weight: 900;
-        letter-spacing: 0.18em;
+        font-weight: 800;
+        letter-spacing: 0.14em;
         text-transform: uppercase;
         color: var(--violet);
         margin-bottom: 16px;
@@ -98,6 +100,7 @@
         border-radius: 99px;
         background: rgba(255, 255, 255, 0.12);
         color: var(--orange);
+        font-family: var(--display);
         font-size: 11px;
         font-weight: 800;
         text-transform: uppercase;
@@ -115,6 +118,7 @@
 
       .ringer-lead-desc {
         color: #b3b6c2;
+        font-family: var(--body);
         font-size: 14.5px;
         line-height: 1.6;
         margin: 0 0 24px;
@@ -134,9 +138,11 @@
         border-radius: 99px;
         background: var(--ringer-green);
         color: #ffffff;
+        font-family: var(--body);
         font-size: 12px;
         font-weight: 800;
-        transition: transform 0.2s;
+        transition: transform 0.2s, box-shadow 0.2s;
+        text-decoration: none;
       }
 
       .ringer-btn-youtube {
@@ -147,10 +153,12 @@
         border-radius: 99px;
         background: rgba(255, 255, 255, 0.12);
         color: #ffffff;
-        border: 1px solid var(--ringer-border);
+        border: 1px solid var(--ringer-dark-border);
+        font-family: var(--body);
         font-size: 12px;
         font-weight: 800;
-        transition: transform 0.2s;
+        transition: transform 0.2s, background 0.2s;
+        text-decoration: none;
       }
 
       .ringer-btn-spotify:hover, .ringer-btn-youtube:hover {
@@ -158,10 +166,10 @@
       }
 
       /* ========================================================================
-        2. NETWORK SHOWS DIRECTORY (CATÁLOGO DE PROGRAMAS)
+        2. NETWORK SHOWS DIRECTORY (CATÁLOGO DE PROGRAMAS THE RINGER)
         ======================================================================== */
       .ringer-shows-section {
-        padding: 40px clamp(16px, 5vw, 60px) 70px;
+        padding: 40px clamp(16px, 5vw, 60px) 60px;
         max-width: 1400px;
         margin: 0 auto;
       }
@@ -170,10 +178,12 @@
         font: 900 clamp(30px, 4vw, 48px) / 1 var(--display);
         letter-spacing: -1.5px;
         margin: 0 0 8px;
+        color: var(--ink);
       }
 
       .ringer-section-lead {
         color: var(--muted);
+        font-family: var(--body);
         font-size: 15px;
         margin: 0 0 30px;
       }
@@ -186,7 +196,7 @@
 
       .ringer-show-card {
         background: #ffffff;
-        border: 1px solid var(--line);
+        border: 1px solid var(--ringer-border);
         border-radius: 20px;
         overflow: hidden;
         display: flex;
@@ -206,7 +216,7 @@
         aspect-ratio: 1;
         overflow: hidden;
         position: relative;
-        background: #1c1d22;
+        background: var(--ringer-dark);
       }
 
       .ringer-show-cover img {
@@ -226,12 +236,14 @@
         left: 12px;
         padding: 4px 10px;
         border-radius: 6px;
-        background: rgba(18, 19, 22, 0.85);
+        background: rgba(18, 19, 22, 0.88);
         backdrop-filter: blur(4px);
         color: #ffffff;
+        font-family: var(--display);
         font-size: 10px;
         font-weight: 800;
         text-transform: uppercase;
+        letter-spacing: 0.05em;
       }
 
       .ringer-show-body {
@@ -242,7 +254,7 @@
       }
 
       .ringer-show-body h4 {
-        font: 800 19px / 1.2 var(--display);
+        font: 800 20px / 1.15 var(--display);
         color: var(--ink);
         margin: 0 0 6px;
         letter-spacing: -0.5px;
@@ -250,6 +262,7 @@
 
       .ringer-show-body p {
         color: var(--muted);
+        font-family: var(--body);
         font-size: 13px;
         line-height: 1.5;
         margin: 0 0 16px;
@@ -260,6 +273,7 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
+        font-family: var(--body);
         font-size: 11px;
         font-weight: 800;
         color: var(--violet);
@@ -286,9 +300,10 @@
       .ringer-filter-btn {
         padding: 8px 18px;
         border-radius: 99px;
-        border: 1px solid var(--line);
+        border: 1px solid var(--ringer-border);
         background: #ffffff;
         color: var(--ink);
+        font-family: var(--body);
         font-size: 12px;
         font-weight: 700;
         cursor: pointer;
@@ -309,7 +324,7 @@
 
       .ringer-ep-card {
         background: #ffffff;
-        border: 1px solid var(--line);
+        border: 1px solid var(--ringer-border);
         border-radius: 18px;
         padding: 22px;
         display: flex;
@@ -329,7 +344,7 @@
         aspect-ratio: 16 / 9;
         border-radius: 12px;
         overflow: hidden;
-        background: #141416;
+        background: var(--ringer-dark);
         margin-bottom: 16px;
       }
 
@@ -373,10 +388,11 @@
       }
 
       .ringer-ep-category {
-        font-size: 10px;
+        font-family: var(--display);
+        font-size: 11px;
         font-weight: 800;
         text-transform: uppercase;
-        letter-spacing: 0.1em;
+        letter-spacing: 0.08em;
         color: var(--violet);
         margin-bottom: 6px;
       }
@@ -390,6 +406,7 @@
 
       .ringer-ep-desc {
         color: var(--muted);
+        font-family: var(--body);
         font-size: 13px;
         line-height: 1.5;
         margin: 0 0 16px;
@@ -402,6 +419,7 @@
         align-items: center;
         padding-top: 12px;
         border-top: 1px solid rgba(20, 20, 20, 0.08);
+        font-family: var(--body);
         font-size: 11px;
         color: var(--muted);
         font-weight: 600;
@@ -411,6 +429,7 @@
         background: none;
         border: none;
         color: var(--ringer-green);
+        font-family: var(--body);
         font-size: 12px;
         font-weight: 800;
         cursor: pointer;
@@ -421,13 +440,13 @@
       }
 
       /* ========================================================================
-        4. MINI PLAYER FLOTANTE EN PARTE INFERIOR (IN-APP PLAYER)
+        4. MINI-PLAYER FLOTANTE IN-APP (BARRA INFERIOR MÓVIL/DESKTOP)
         ======================================================================== */
       .app-mini-player {
         position: fixed;
-        bottom: 16px;
+        bottom: calc(16px + var(--safe-bottom));
         left: 50%;
-        transform: translateX(-50%) translateY(120%);
+        transform: translateX(-50%) translateY(140%);
         width: min(94vw, 760px);
         background: #141416;
         color: #ffffff;
@@ -474,16 +493,19 @@
       }
 
       .player-track-title {
-        font-size: 13px;
+        font-family: var(--display);
+        font-size: 14px;
         font-weight: 800;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
         color: #ffffff;
         margin: 0;
+        letter-spacing: -0.3px;
       }
 
       .player-track-show {
+        font-family: var(--body);
         font-size: 11px;
         color: var(--ringer-green);
         margin: 0;
@@ -535,7 +557,7 @@
         .ringer-episodes-list { grid-template-columns: 1fr; }
         .app-mini-player {
           border-radius: 20px;
-          bottom: 10px;
+          bottom: calc(10px + var(--safe-bottom));
           padding: 10px 14px;
         }
       }
@@ -572,7 +594,7 @@
         ======================================================================== -->
       <section class="ringer-hero-section reveal">
         <div class="ringer-network-kicker">
-          <i class="fa-solid fa-tower-broadcast"></i> NAZARENO PODCAST NETWORK · EPISODIO DESTACADO
+          <i class="fa-solid fa-tower-broadcast"></i>PODCAST NZRN · EPISODIO DESTACADO
         </div>
 
         <div class="ringer-lead-box">
