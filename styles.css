@@ -6435,3 +6435,193 @@ html, body {
     margin-top: 18px !important;
   }
 }
+
+/* ========================================================================
+  ANIMACIÓN DE ENTRADA HERO (ESTILO PASSION CITY CHURCH)
+  ======================================================================== */
+@keyframes passionFadeUp {
+  0% {
+    opacity: 0;
+    transform: translateY(32px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.passion-entrance .passion-step-1 {
+  animation: passionFadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both;
+}
+
+.passion-entrance .passion-step-2 {
+  animation: passionFadeUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both;
+}
+
+.passion-entrance .passion-step-3 {
+  animation: passionFadeUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.45s both;
+}
+
+.passion-entrance .passion-step-4 {
+  animation: passionFadeUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.6s both;
+}
+
+.passion-step-5 {
+  animation: passionFadeUp 1s cubic-bezier(0.16, 1, 0.3, 1) 0.75s both;
+}
+
+/* ========================================================================
+  HUB DE MINISTERIOS & SUB-MARCAS (FIGMA IDENTIDAD)
+  ======================================================================== */
+.ministries-hub-section {
+  padding: 90px clamp(20px, 6vw, 80px);
+  max-width: 1360px;
+  margin: 0 auto;
+}
+
+.ministries-hub-header {
+  max-width: 720px;
+  margin-bottom: 45px;
+}
+
+.ministries-hub-header h2 {
+  font: 800 clamp(38px, 5.5vw, 68px) / 1 var(--display);
+  letter-spacing: -1.5px;
+  margin: 10px 0 16px;
+}
+
+.ministries-hub-header h2 em {
+  color: var(--violet);
+  font-family: var(--serif);
+  font-style: italic;
+}
+
+.ministries-hub-header p {
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.ministries-hub-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.ministry-brand-card {
+  display: flex;
+  flex-direction: column;
+  border-radius: 24px;
+  overflow: hidden;
+  padding: 28px 24px;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease;
+  position: relative;
+  min-height: 360px;
+  text-decoration: none;
+}
+
+.ministry-brand-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+}
+
+/* Identidades cromáticas por ministerio */
+.brand-kids {
+  background: #008b8b;
+  color: #ffffff;
+}
+.brand-kids .ministry-badge-wrap { color: #ffe4b5; }
+.brand-kids .ministry-age-pill { background: rgba(255, 228, 181, 0.2); color: #ffe4b5; }
+
+.brand-teens {
+  background: #0d382c;
+  color: #ffffff;
+}
+.brand-teens .ministry-badge-wrap { color: #a3e635; }
+.brand-teens .ministry-age-pill { background: rgba(163, 230, 53, 0.2); color: #a3e635; }
+
+.brand-jni {
+  background: #0a0a0c;
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+.brand-jni .ministry-badge-wrap { color: #ffe600; }
+.brand-jni .ministry-age-pill { background: rgba(255, 230, 0, 0.2); color: #ffe600; }
+
+.brand-conexion {
+  background: #25202e;
+  color: #ffffff;
+}
+.brand-conexion .ministry-badge-wrap { color: #ff6b6b; }
+.brand-conexion .ministry-age-pill { background: rgba(255, 107, 107, 0.2); color: #ff6b6b; }
+
+/* Tipografía de Logos de Sub-Marcas */
+.ministry-badge-wrap {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: auto;
+}
+
+.sub-brand-text {
+  font-family: 'Syne', sans-serif;
+  font-size: 34px;
+  font-weight: 900;
+  line-height: 0.95;
+  letter-spacing: -1px;
+}
+
+.sub-brand-sub {
+  font-family: 'Syne', sans-serif;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  opacity: 0.85;
+}
+
+.ministry-card-body {
+  margin-top: 40px;
+}
+
+.ministry-age-pill {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 99px;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.ministry-card-body h3 {
+  font: 800 20px / 1.15 var(--display);
+  margin: 0 0 6px;
+  color: #ffffff;
+}
+
+.ministry-card-body p {
+  font-size: 12.5px;
+  line-height: 1.5;
+  opacity: 0.85;
+  margin: 0 0 16px;
+}
+
+.ministry-card-arrow {
+  font-size: 12px;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+@media (max-width: 1024px) {
+  .ministries-hub-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .ministries-hub-grid {
+    grid-template-columns: 1fr;
+  }
+}

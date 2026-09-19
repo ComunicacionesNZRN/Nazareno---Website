@@ -19,14 +19,15 @@ if (!document.querySelector('link[href*="font-awesome"]')) {
   NAVEGACIÓN SUPERIOR (DESKTOP)
   ======================================================================== */
 const primaryNavigation = [
-  ["Donación", "donar.html"],
+  ["Visítanos", "visitanos.html"],
+  ["Tu Próximo Paso", "primera-vez.html"],
   ["Grupos", "grupos.html"],
-  ["Encuentros", "encuentros.html"], // Pestaña añadida a la barra superior
-  ["Servir", "ministerios.html"],
+  ["Encuentros", "encuentros.html"],
+  ["Podcast", "podcast.html"],
   ["Actividades", "eventos.html"],
+  ["Donación", "donar.html"],
   ["Conócenos", "nosotros.html"],
 ];
-
 
 const utilityNavigation = [
   ["Inicio", "index.html"],
@@ -282,26 +283,29 @@ if (connectCarousel) {
 }
 
 /* ========================================================================
-  MENÚ LATERAL MÓVIL (ORGANIZACIÓN EXACTA SEGÚN TU CAPTURA)
+  2. MENÚ LATERAL MÓVIL COMPLETO (CON "PRIMERA VEZ / PRÓXIMO PASO")
   ======================================================================== */
 if (mobileNav) {
   const menuSections = [
-    ["Participa", [
-      ["Visítanos", "Horarios y ubicación", "visitanos.html", "fa-house"],
-      ["En vivo y prédicas", "Conéctate desde donde estés", "mensajes.html", "fa-play"],
-      ["Grupos", "Crece en comunidad", "grupos.html", "fa-people-group"],
-      ["Encuentros H/M", "Retiros de hombres y mujeres", "encuentros.html", "fa-users-between-lines"],
-      ["Donación", "Generosidad en acción", "donar.html", "fa-heart"],
-      ["Servir", "Pon tus dones en movimiento", "ministerios.html", "fa-hands-helping"],
-      ["Actividades", "Próximos encuentros", "eventos.html", "fa-calendar-days"],
-    ]],
     ["Descubre", [
-      ["Primera vez", "Todo lo que necesitas saber", "primera-vez.html", "fa-compass"],
-      ["Recursos", "Devocionales y materiales", "devocional.html", "fa-book-open"],
-      ["Bautismos", "Celebra tu decisión de seguir a Jesús", "contacto.html", "fa-cross"],
+      ["Primera vez", "Tu próximo paso y qué esperar", "primera-vez.html", "fa-compass"],
+      ["Visítanos", "Horarios y cómo llegar", "visitanos.html", "fa-house"],
+      ["Palabra de Vida", "Devocionales diarios", "devocional.html", "fa-book-open"],
+      ["Nazareno Podcast", "Escucha en Spotify & YouTube", "podcast.html", "fa-podcast"],
+      ["En vivo y prédicas", "Transmisiones online", "mensajes.html", "fa-play"],
     ]],
-    ["Conócenos", [
-      ["Nuestra iglesia", "Conoce nuestra historia y misión", "nosotros.html", "fa-church"],
+    ["Comunidades", [
+      ["JNI Jóvenes", "Sábados 5:30 PM", "jni.html", "fa-bolt"],
+      ["Teens (12-15 años)", "Pre-juveniles con propósito", "teens.html", "fa-fire-flame-curved"],
+      ["Nazareno Kids", "Bebés a Primaria", "kids.html", "fa-shapes"],
+      ["Punto Conexión", "Grupos de hogar en Cali", "grupos.html", "fa-people-group"],
+      ["Encuentros H/M", "Retiros espirituales anuales", "encuentros.html", "fa-users-between-lines"],
+    ]],
+    ["Participa", [
+      ["Servir", "Equipos de voluntariado", "ministerios.html", "fa-hands-helping"],
+      ["Actividades", "Eventos y agenda", "eventos.html", "fa-calendar-days"],
+      ["Donación", "Generosidad en acción", "donar.html", "fa-heart"],
+      ["Nuestra Iglesia", "Historia y equipo pastoral", "nosotros.html", "fa-church"],
       ["Contacto", "Hablemos por WhatsApp", "contacto.html", "fa-message"],
     ]],
   ];
@@ -343,7 +347,6 @@ if (mobileNav) {
       <p>Cali · Colombia</p>
     </div>`;
 }
-
 if (header) {
   const headerActions = header.querySelector(".header-actions");
   headerActions?.querySelectorAll(".header-cta, .live-pill").forEach((element) => element.remove());
